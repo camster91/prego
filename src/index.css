@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+@theme {
+  /* Pregnancy-friendly, calming palette */
+  --color-primary-50: #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  --color-primary-200: #bae6fd;
+  --color-primary-300: #7dd3fc;
+  --color-primary-400: #38bdf8;
+  --color-primary-500: #0ea5e9;
+  --color-primary-600: #0284c7;
+  --color-primary-700: #0369a1;
+  --color-primary-800: #075985;
+  --color-primary-900: #0c4a6e;
+
+  --color-accent-50: #fdf4ff;
+  --color-accent-100: #fae8ff;
+  --color-accent-200: #f5d0fe;
+  --color-accent-300: #f0abfc;
+  --color-accent-400: #e879f9;
+  --color-accent-500: #d946ef;
+  --color-accent-600: #c026d3;
+  --color-accent-700: #a21caf;
+  --color-accent-800: #86198f;
+  --color-accent-900: #701a75;
+
+  --color-sage-50: #f6f7f6;
+  --color-sage-100: #e3e7e3;
+  --color-sage-200: #c7cfc7;
+  --color-sage-300: #a3b0a3;
+  --color-sage-400: #7d8f7d;
+  --color-sage-500: #627462;
+  --color-sage-600: #4d5c4d;
+  --color-sage-700: #404b40;
+  --color-sage-800: #363e36;
+  --color-sage-900: #2f352f;
+
+  --color-blush-50: #fdf2f4;
+  --color-blush-100: #fce7eb;
+  --color-blush-200: #f9d0d9;
+  --color-blush-300: #f4a9ba;
+  --color-blush-400: #ed7a95;
+  --color-blush-500: #e04d72;
+  --color-blush-600: #cc2d5a;
+  --color-blush-700: #ab2049;
+  --color-blush-800: #8f1d41;
+  --color-blush-900: #7a1c3c;
+
+  /* Trimester colors */
+  --color-trimester-1: #10b981;
+  --color-trimester-2: #f59e0b;
+  --color-trimester-3: #8b5cf6;
+
+  /* Animations */
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-countdown: countdown 1s ease-in-out;
+  --animate-progress-fill: progressFill 0.5s ease-out forwards;
+  --animate-slide-up: slideUp 0.3s ease-out;
+  --animate-fade-in: fadeIn 0.3s ease-out;
+}
+
+@keyframes countdown {
+  0% { transform: scale(1.2); opacity: 0; }
+  50% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0; }
+}
+
+@keyframes progressFill {
+  0% { width: 0%; }
+  100% { width: var(--progress-width); }
+}
+
+@keyframes slideUp {
+  0% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@layer base {
+  body {
+    @apply bg-sage-50 text-gray-900 antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-6;
+  }
+
+  .input {
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200 bg-white;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    @apply transition-all duration-200;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .badge-trimester-1 {
+    @apply bg-emerald-100 text-emerald-800;
+  }
+
+  .badge-trimester-2 {
+    @apply bg-amber-100 text-amber-800;
+  }
+
+  .badge-trimester-3 {
+    @apply bg-violet-100 text-violet-800;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
+}
+
+/* Timer circle animation */
+.timer-circle {
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+/* Safe area for mobile bottom nav */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
