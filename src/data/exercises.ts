@@ -15,6 +15,7 @@ export const exercises: Exercise[] = [
       'Repeat 10-15 times'
     ],
     thumbnailUrl: '/images/exercises/kegel.jpg',
+    videoUrl: 'https://www.youtube.com/embed/rsTdplBob5I',
     safeTrmesters: [1, 2, 3],
     contraindications: ['Active pelvic pain', 'Recent pelvic surgery'],
     modifications: [],
@@ -36,6 +37,7 @@ export const exercises: Exercise[] = [
       'Follow your breath throughout the movement'
     ],
     thumbnailUrl: '/images/exercises/cat-cow.jpg',
+    videoUrl: 'https://www.youtube.com/embed/kqnua4rHVVA',
     safeTrmesters: [1, 2, 3],
     contraindications: ['Wrist injury', 'Severe back pain'],
     modifications: [
@@ -63,6 +65,7 @@ export const exercises: Exercise[] = [
       'Press through heels to stand back up'
     ],
     thumbnailUrl: '/images/exercises/squat.jpg',
+    videoUrl: 'https://www.youtube.com/embed/xqvCmoLULNY',
     safeTrmesters: [1, 2, 3],
     contraindications: ['Placenta previa', 'Cervical insufficiency', 'Preterm labor risk'],
     modifications: [
@@ -96,6 +99,7 @@ export const exercises: Exercise[] = [
       'Repeat 10-15 times'
     ],
     thumbnailUrl: '/images/exercises/wall-pushup.jpg',
+    videoUrl: 'https://www.youtube.com/embed/a6YHbXD2XlU',
     safeTrmesters: [1, 2, 3],
     contraindications: ['Carpal tunnel syndrome', 'Shoulder injury'],
     modifications: [],
@@ -120,6 +124,7 @@ export const exercises: Exercise[] = [
       'Complete reps, then switch sides'
     ],
     thumbnailUrl: '/images/exercises/leg-lift.jpg',
+    videoUrl: 'https://www.youtube.com/embed/jgh6sGwtTwk',
     safeTrmesters: [1, 2, 3],
     contraindications: ['Hip pain', 'Symphysis pubis dysfunction'],
     modifications: [
@@ -150,6 +155,7 @@ export const exercises: Exercise[] = [
       'Continue for 5-10 breaths'
     ],
     thumbnailUrl: '/images/exercises/breathing.jpg',
+    videoUrl: 'https://www.youtube.com/embed/8VwufJrUhic',
     safeTrmesters: [1, 2, 3],
     contraindications: [],
     modifications: [],
@@ -172,6 +178,7 @@ export const exercises: Exercise[] = [
       'Swing arms naturally with the movement'
     ],
     thumbnailUrl: '/images/exercises/seated-march.jpg',
+    videoUrl: 'https://www.youtube.com/embed/3hVvmFxqpFI',
     safeTrmesters: [1, 2, 3],
     contraindications: ['Severe hip pain'],
     modifications: [],
@@ -194,6 +201,7 @@ export const exercises: Exercise[] = [
       'Repeat on opposite side'
     ],
     thumbnailUrl: '/images/exercises/bird-dog.jpg',
+    videoUrl: 'https://www.youtube.com/embed/wiFNA3sqjCA',
     safeTrmesters: [1, 2],
     contraindications: ['Wrist pain', 'Balance issues'],
     modifications: [
@@ -222,6 +230,7 @@ export const exercises: Exercise[] = [
       'Repeat 15-20 times'
     ],
     thumbnailUrl: '/images/exercises/calf-raise.jpg',
+    videoUrl: 'https://www.youtube.com/embed/gwLzBJYoWlI',
     safeTrmesters: [1, 2, 3],
     contraindications: ['Severe varicose veins', 'Balance issues without support'],
     modifications: [],
@@ -245,6 +254,7 @@ export const exercises: Exercise[] = [
       'Breathe naturally throughout'
     ],
     thumbnailUrl: '/images/exercises/shoulder-circles.jpg',
+    videoUrl: 'https://www.youtube.com/embed/QxM00W-hP4c',
     safeTrmesters: [1, 2, 3],
     contraindications: ['Shoulder injury'],
     modifications: [],
@@ -267,6 +277,7 @@ export const exercises: Exercise[] = [
       'Keep upper body stable'
     ],
     thumbnailUrl: '/images/exercises/hip-circles.jpg',
+    videoUrl: 'https://www.youtube.com/embed/ea05VxDT3Pw',
     safeTrmesters: [1, 2, 3],
     contraindications: ['Severe pelvic pain', 'Symphysis pubis dysfunction'],
     modifications: [],
@@ -289,6 +300,7 @@ export const exercises: Exercise[] = [
       'Hold for 30 seconds, then switch sides'
     ],
     thumbnailUrl: '/images/exercises/warrior.jpg',
+    videoUrl: 'https://www.youtube.com/embed/Mnf6Np1_PPI',
     safeTrmesters: [1, 2, 3],
     contraindications: ['High blood pressure', 'Balance issues'],
     modifications: [
