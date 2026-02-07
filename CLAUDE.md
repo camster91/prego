@@ -11,16 +11,20 @@ Prego is a pregnancy exercise web app built with React 19, TypeScript, and Vite.
 - `npm run lint` — Run ESLint on all files
 - `npm run preview` — Preview production build
 
+**Note:** Build (`tsc -b`) passes clean. Lint has pre-existing errors (unused imports, react-refresh warnings, hook dependency warnings) — these are not regressions.
+
 ## Architecture
 
 - **Framework**: React 19 + TypeScript (strict mode, ES2022 target)
 - **Build**: Vite 7 with `@vitejs/plugin-react`
 - **Styling**: Tailwind CSS v4 via PostCSS + `tailwind.config.js` custom theme
+- **Component variants**: `class-variance-authority` (CVA) for Button and Badge variants
 - **State**: Zustand with `persist` middleware (localStorage keys: `prego-user-storage`, `prego-workout-session-storage`)
 - **Routing**: React Router v7 (`createBrowserRouter`)
 - **Data viz**: Recharts
 - **Icons**: Lucide React
 - **Dates**: date-fns
+- **Audio**: use-sound
 - **Path alias**: `@/` maps to `./src/`
 
 ## Project Structure
@@ -57,8 +61,12 @@ src/
 
 ## Key Stores
 
-- **useUserStore** — User profile, onboarding state, pregnancy info (due date, trimester, week). Auto-calculates `currentWeek` and `currentTrimester` from `dueDate`.
+- **useUserStore** — User profile, onboarding state, pregnancy info (due date, trimester, week). Auto-calculates `currentWeek` and `currentTrimester` from `dueDate`. Also exports `createUserProfile()` helper.
 - **useWorkoutSessionStore** — Active workout session, exercise index, pause state, completed session history. Exports selector helpers: `selectCompletedWorkoutsCount`, `selectTotalMinutesExercised`, `selectRecentSessions`.
+
+## Key Hooks
+
+- **useTimer** — Workout timer with phases: `countdown` → `exercise` → `rest` → `complete`. Accepts a `TimerConfig` with exercise list and callbacks (`onExerciseComplete`, `onWorkoutComplete`, `onPhaseChange`). Returns `{ state, start, pause, resume, skip, reset, goToExercise }`.
 
 ## Domain Types
 
@@ -66,12 +74,28 @@ src/
 - `ExerciseCategory`: `strength | cardio | flexibility | pelvic-floor | breathing | balance`
 - `IntensityLevel`: `low | moderate | high`
 - `MuscleGroup`: `core | legs | arms | back | glutes | pelvic-floor | full-body`
+- `AchievementType`: `first-workout | week-streak-3 | week-streak-7 | trimester-complete | category-master | consistency-champion | workout-count-10 | workout-count-25 | workout-count-50`
+- `WorkoutSession.status`: `in-progress | completed | abandoned`
+- `TimerPhase`: `countdown | exercise | rest | complete`
 
 ## Data Layer
 
 All data is static (no API). Exercise and workout definitions live in `src/data/`:
 - `exercises.ts` — 12 exercises with trimester safety, contraindications, modifications, and filter helpers (`getExerciseById`, `filterExercises`)
 - `workouts.ts` — 8 workout plans organized by trimester with filter helpers (`getWorkoutById`, `filterWorkouts`)
+
+## UI Components
+
+Shared UI components in `src/shared/components/ui/`:
+- **Button** — CVA-based with variants (`primary`, `secondary`, `ghost`, `danger`, `outline`, `success`), sizes (`sm`, `md`, `lg`, `icon`, `icon-sm`, `icon-lg`), `fullWidth`, and `isLoading` props
+- **Card** — Compound component: `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`
+- **Badge** — CVA-based with color variants and trimester-specific `TrimesterBadge`
+- **Modal** — Dialog overlay component
+
+Layout components in `src/shared/components/layout/`:
+- **PageLayout** — Page wrapper with title, subtitle, `headerAction` slot, and bottom padding for nav
+- **Header** — Top navigation bar
+- **BottomNav** — Mobile bottom tab navigation
 
 ## Tailwind Theme
 
@@ -92,6 +116,7 @@ Custom animations: `pulse-slow`, `countdown`, `progress-fill`, `slide-up`, `fade
 - Component files use PascalCase (e.g., `HomePage.tsx`)
 - Type files use `*.types.ts` in the `types/` directory
 - Barrel exports via `index.ts` in `types/` and `pages/`
+- UI component variants use `class-variance-authority` (CVA)
 - ESLint flat config with React Hooks and React Refresh plugins
 - No test framework is configured; there are no tests
 - No backend or API; all data is in-memory/localStorage
