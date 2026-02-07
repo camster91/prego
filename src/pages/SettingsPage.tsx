@@ -7,14 +7,14 @@ import {
   Volume2,
   Heart,
   Shield,
+  FileText,
   ChevronRight,
-  LogOut,
   Trash2
 } from 'lucide-react';
 import { PageLayout } from '../shared/components/layout/PageLayout';
 import { Card, CardContent } from '../shared/components/ui/Card';
 import { Button } from '../shared/components/ui/Button';
-import { Badge, TrimesterBadge } from '../shared/components/ui/Badge';
+import { TrimesterBadge } from '../shared/components/ui/Badge';
 import { Modal } from '../shared/components/ui/Modal';
 import { useUserStore } from '../stores';
 import { format, differenceInDays } from 'date-fns';
@@ -205,6 +205,16 @@ function SettingsPage() {
           About
         </h3>
         <Card padding="none">
+          <SettingsItem
+            icon={Shield}
+            label="Privacy Policy"
+            onClick={() => navigate('/privacy')}
+          />
+          <SettingsItem
+            icon={FileText}
+            label="Terms of Service"
+            onClick={() => navigate('/terms')}
+          />
           <SettingsItem
             icon={Heart}
             label="App Version"

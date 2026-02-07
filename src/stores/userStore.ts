@@ -15,7 +15,7 @@ interface UserState {
 }
 
 // Calculate current week and trimester from due date
-function calculatePregnancyInfo(dueDate: Date): { currentWeek: number; currentTrimester: Trimester } {
+export function calculatePregnancyInfo(dueDate: Date): { currentWeek: number; currentTrimester: Trimester } {
   const today = new Date();
   const dueDateObj = new Date(dueDate);
 

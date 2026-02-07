@@ -4,9 +4,10 @@ import { Search, Filter, ChevronRight, Clock, X } from 'lucide-react';
 import { PageLayout } from '../shared/components/layout/PageLayout';
 import { Card, CardContent } from '../shared/components/ui/Card';
 import { Button } from '../shared/components/ui/Button';
-import { TrimesterBadge, IntensityBadge, Badge } from '../shared/components/ui/Badge';
+import { IntensityBadge, Badge } from '../shared/components/ui/Badge';
 import { Modal } from '../shared/components/ui/Modal';
-import { exercises, filterExercises } from '../data/exercises';
+import { ExercisePlaceholder } from '../shared/components/ui/ExercisePlaceholder';
+import { filterExercises } from '../data/exercises';
 import { useUserStore } from '../stores';
 import type { ExerciseCategory, IntensityLevel, Trimester } from '../types';
 
@@ -130,11 +131,7 @@ function ExercisesPage() {
           <Link key={exercise.id} to={`/exercises/${exercise.id}`}>
             <Card className="hover:shadow-md transition-shadow">
               <CardContent className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <span className="text-2xl">
-                    {getCategoryEmoji(exercise.category)}
-                  </span>
-                </div>
+                <ExercisePlaceholder category={exercise.category} size="md" />
 
                 <div className="flex-1 min-w-0">
                   <h3 className="font-medium text-gray-900 truncate">
@@ -266,18 +263,6 @@ function ExercisesPage() {
       </Modal>
     </PageLayout>
   );
-}
-
-function getCategoryEmoji(category: ExerciseCategory): string {
-  const emojis: Record<ExerciseCategory, string> = {
-    strength: '💪',
-    cardio: '❤️',
-    flexibility: '🧘',
-    'pelvic-floor': '🌸',
-    breathing: '🌬️',
-    balance: '⚖️'
-  };
-  return emojis[category];
 }
 
 export { ExercisesPage };
