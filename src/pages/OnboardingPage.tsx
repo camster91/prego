@@ -34,7 +34,7 @@ function OnboardingPage() {
     <div className="min-h-screen bg-gradient-to-b from-primary-50 to-sage-50 flex flex-col">
       {/* Progress dots */}
       <div className="flex justify-center gap-2 pt-8 pb-4">
-        {['welcome', 'name', 'due-date', 'health', 'complete'].map((s, i) => (
+        {['welcome', 'name', 'due-date', 'health', 'complete'].map((s) => (
           <div
             key={s}
             className={cn(

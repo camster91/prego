@@ -93,4 +93,4 @@ function IntensityBadge({ intensity, className }: IntensityBadgeProps) {
   );
 }
 
-export { Badge, badgeVariants, TrimesterBadge, IntensityBadge };
+export { Badge, TrimesterBadge, IntensityBadge };

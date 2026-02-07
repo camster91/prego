@@ -8,13 +8,12 @@ import {
   Heart,
   Shield,
   ChevronRight,
-  LogOut,
   Trash2
 } from 'lucide-react';
 import { PageLayout } from '../shared/components/layout/PageLayout';
 import { Card, CardContent } from '../shared/components/ui/Card';
 import { Button } from '../shared/components/ui/Button';
-import { Badge, TrimesterBadge } from '../shared/components/ui/Badge';
+import { TrimesterBadge } from '../shared/components/ui/Badge';
 import { Modal } from '../shared/components/ui/Modal';
 import { useUserStore } from '../stores';
 import { format, differenceInDays } from 'date-fns';

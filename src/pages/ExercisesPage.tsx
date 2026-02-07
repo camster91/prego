@@ -4,9 +4,9 @@ import { Search, Filter, ChevronRight, Clock, X } from 'lucide-react';
 import { PageLayout } from '../shared/components/layout/PageLayout';
 import { Card, CardContent } from '../shared/components/ui/Card';
 import { Button } from '../shared/components/ui/Button';
-import { TrimesterBadge, IntensityBadge, Badge } from '../shared/components/ui/Badge';
+import { IntensityBadge, Badge } from '../shared/components/ui/Badge';
 import { Modal } from '../shared/components/ui/Modal';
-import { exercises, filterExercises } from '../data/exercises';
+import { filterExercises } from '../data/exercises';
 import { useUserStore } from '../stores';
 import type { ExerciseCategory, IntensityLevel, Trimester } from '../types';
 

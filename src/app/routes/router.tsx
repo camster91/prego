@@ -1,6 +1,5 @@
-import { createBrowserRouter, Outlet } from 'react-router-dom';
-import { Header } from '../../shared/components/layout/Header';
-import { BottomNav } from '../../shared/components/layout/BottomNav';
+import { createBrowserRouter } from 'react-router-dom';
+import { RootLayout, WorkoutLayout } from './layouts';
 
 // Pages
 import { HomePage } from '../../pages/HomePage';
@@ -12,25 +11,6 @@ import { ActiveWorkoutPage } from '../../pages/ActiveWorkoutPage';
 import { ProgressPage } from '../../pages/ProgressPage';
 import { SettingsPage } from '../../pages/SettingsPage';
 import { OnboardingPage } from '../../pages/OnboardingPage';
-
-function RootLayout() {
-  return (
-    <div className="min-h-screen bg-sage-50">
-      <Header />
-      <Outlet />
-      <BottomNav />
-    </div>
-  );
-}
-
-function WorkoutLayout() {
-  // No bottom nav during active workout
-  return (
-    <div className="min-h-screen bg-sage-50">
-      <Outlet />
-    </div>
-  );
-}
 
 export const router = createBrowserRouter([
   {
