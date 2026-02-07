@@ -1,9 +1,10 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Dumbbell, Play, Calendar, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Clock, Dumbbell, Play, ChevronRight } from 'lucide-react';
 import { PageLayout } from '../shared/components/layout/PageLayout';
 import { Card, CardContent } from '../shared/components/ui/Card';
 import { Button } from '../shared/components/ui/Button';
 import { TrimesterBadge, IntensityBadge, Badge } from '../shared/components/ui/Badge';
+import { ExercisePlaceholder } from '../shared/components/ui/ExercisePlaceholder';
 import { getWorkoutById } from '../data/workouts';
 import { getExerciseById } from '../data/exercises';
 import { cn } from '../shared/utils/cn';
@@ -29,11 +30,6 @@ function WorkoutDetailPage() {
 
   // Calculate total rest time
   const totalRestSeconds = workout.exercises.reduce((acc, ex) => acc + ex.restSeconds, 0);
-  const totalExerciseSeconds = workout.exercises.reduce(
-    (acc, ex) => acc + (ex.durationSeconds || 0),
-    0
-  );
-
   return (
     <PageLayout noPadding noBottomPadding={false}>
       {/* Back button */}
@@ -151,9 +147,7 @@ function WorkoutDetailPage() {
                 >
                   <Card className="hover:shadow-md transition-shadow">
                     <CardContent className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center font-bold text-gray-500">
-                        {index + 1}
-                      </div>
+                      <ExercisePlaceholder category={exercise.category} size="sm" />
                       <div className="flex-1 min-w-0">
                         <h3 className="font-medium text-gray-900 truncate">
                           {exercise.name}

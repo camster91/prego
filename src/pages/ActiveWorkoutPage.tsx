@@ -8,7 +8,6 @@ import {
   Volume2,
   VolumeX,
   ChevronLeft,
-  ChevronRight,
   CheckCircle,
   AlertCircle,
   Info,
@@ -42,6 +41,39 @@ function ActiveWorkoutPage() {
   const { startWorkout, completeExercise, endWorkout, abandonWorkout } =
     useWorkoutSessionStore();
 
+  // Play sounds
+  const playSound = useCallback(
+    (type: 'beep' | 'complete' | 'finish') => {
+      if (!soundEnabled) return;
+
+      try {
+        const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        const audioContext = new AudioCtx();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        oscillator.frequency.value =
+          type === 'beep' ? 440 : type === 'complete' ? 880 : 660;
+        oscillator.type = 'sine';
+
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(
+          0.01,
+          audioContext.currentTime + (type === 'finish' ? 0.5 : 0.2)
+        );
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + (type === 'finish' ? 0.5 : 0.2));
+      } catch {
+        // Audio not supported
+      }
+    },
+    [soundEnabled]
+  );
+
   // Build timer config
   const timerConfig: TimerConfig = useMemo(() => {
     if (!workout) {
@@ -74,49 +106,16 @@ function ActiveWorkoutPage() {
         }
       }
     };
-  }, [workout, completeExercise]);
+  }, [workout, completeExercise, playSound]);
 
   const { state, start, pause, resume, skip, goToExercise } = useTimer(timerConfig);
-
-  // Play sounds
-  const playSound = useCallback(
-    (type: 'beep' | 'complete' | 'finish') => {
-      if (!soundEnabled) return;
-
-      try {
-        const audioContext = new (window.AudioContext ||
-          (window as any).webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-
-        oscillator.frequency.value =
-          type === 'beep' ? 440 : type === 'complete' ? 880 : 660;
-        oscillator.type = 'sine';
-
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(
-          0.01,
-          audioContext.currentTime + (type === 'finish' ? 0.5 : 0.2)
-        );
-
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + (type === 'finish' ? 0.5 : 0.2));
-      } catch {
-        // Audio not supported
-      }
-    },
-    [soundEnabled]
-  );
 
   // Start workout session when component mounts
   useEffect(() => {
     if (workout) {
       startWorkout(workout.id);
     }
-  }, [workout?.id]);
+  }, [workout, startWorkout]);
 
   const handleExit = () => {
     setShowExitModal(true);

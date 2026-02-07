@@ -1,9 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, AlertTriangle, Info, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Clock, AlertTriangle, Info } from 'lucide-react';
 import { PageLayout } from '../shared/components/layout/PageLayout';
 import { Card, CardContent } from '../shared/components/ui/Card';
 import { Button } from '../shared/components/ui/Button';
 import { Badge, TrimesterBadge, IntensityBadge } from '../shared/components/ui/Badge';
+import { ExercisePlaceholder } from '../shared/components/ui/ExercisePlaceholder';
 import { getExerciseById } from '../data/exercises';
 import { useUserStore } from '../stores';
 
@@ -53,9 +54,7 @@ function ExerciseDetailPage() {
       {/* Hero section */}
       <div className="px-4 py-6">
         <div className="flex items-start gap-4 mb-4">
-          <div className="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-            <span className="text-3xl">{getCategoryEmoji(exercise.category)}</span>
-          </div>
+          <ExercisePlaceholder category={exercise.category} size="lg" />
           <div>
             <h1 className="text-2xl font-bold text-gray-900">{exercise.name}</h1>
             <div className="flex flex-wrap items-center gap-2 mt-2">
@@ -202,18 +201,6 @@ function ExerciseDetailPage() {
       </div>
     </PageLayout>
   );
-}
-
-function getCategoryEmoji(category: string): string {
-  const emojis: Record<string, string> = {
-    strength: '💪',
-    cardio: '❤️',
-    flexibility: '🧘',
-    'pelvic-floor': '🌸',
-    breathing: '🌬️',
-    balance: '⚖️'
-  };
-  return emojis[category] || '🏃';
 }
 
 export { ExerciseDetailPage };
