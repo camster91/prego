@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import type { TimerState, TimerConfig, TimerPhase } from '../types';
+import type { TimerState, TimerConfig } from '../types';
 
 export function useTimer(config: TimerConfig) {
   const [state, setState] = useState<TimerState>(() => ({
@@ -21,6 +21,37 @@ export function useTimer(config: TimerConfig) {
       intervalRef.current = null;
     }
   }, []);
+
+  const moveToNextExercise = useCallback(
+    (currentState: TimerState, exercises: TimerConfig['exercises']): TimerState => {
+      const nextIndex = currentState.currentExerciseIndex + 1;
+
+      if (nextIndex >= exercises.length) {
+        // Workout complete
+        config.onPhaseChange?.('complete');
+        config.onWorkoutComplete?.();
+        return {
+          ...currentState,
+          phase: 'complete',
+          remainingSeconds: 0,
+          isRunning: false
+        };
+      }
+
+      // Start next exercise
+      const nextExercise = exercises[nextIndex];
+      config.onPhaseChange?.('exercise');
+
+      return {
+        ...currentState,
+        phase: 'exercise',
+        currentExerciseIndex: nextIndex,
+        totalSeconds: nextExercise.durationSeconds,
+        remainingSeconds: nextExercise.durationSeconds
+      };
+    },
+    [config]
+  );
 
   const handlePhaseComplete = useCallback(
     (currentState: TimerState): TimerState => {
@@ -67,38 +98,7 @@ export function useTimer(config: TimerConfig) {
           return currentState;
       }
     },
-    [config]
-  );
-
-  const moveToNextExercise = useCallback(
-    (currentState: TimerState, exercises: TimerConfig['exercises']): TimerState => {
-      const nextIndex = currentState.currentExerciseIndex + 1;
-
-      if (nextIndex >= exercises.length) {
-        // Workout complete
-        config.onPhaseChange?.('complete');
-        config.onWorkoutComplete?.();
-        return {
-          ...currentState,
-          phase: 'complete',
-          remainingSeconds: 0,
-          isRunning: false
-        };
-      }
-
-      // Start next exercise
-      const nextExercise = exercises[nextIndex];
-      config.onPhaseChange?.('exercise');
-
-      return {
-        ...currentState,
-        phase: 'exercise',
-        currentExerciseIndex: nextIndex,
-        totalSeconds: nextExercise.durationSeconds,
-        remainingSeconds: nextExercise.durationSeconds
-      };
-    },
-    [config]
+    [config, moveToNextExercise]
   );
 
   // Timer tick

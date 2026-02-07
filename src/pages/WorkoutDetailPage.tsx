@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Dumbbell, Play, Calendar, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Clock, Dumbbell, Play, ChevronRight } from 'lucide-react';
 import { PageLayout } from '../shared/components/layout/PageLayout';
 import { Card, CardContent } from '../shared/components/ui/Card';
 import { Button } from '../shared/components/ui/Button';
@@ -29,11 +29,6 @@ function WorkoutDetailPage() {
 
   // Calculate total rest time
   const totalRestSeconds = workout.exercises.reduce((acc, ex) => acc + ex.restSeconds, 0);
-  const totalExerciseSeconds = workout.exercises.reduce(
-    (acc, ex) => acc + (ex.durationSeconds || 0),
-    0
-  );
-
   return (
     <PageLayout noPadding noBottomPadding={false}>
       {/* Back button */}

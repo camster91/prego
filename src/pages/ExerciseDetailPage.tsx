@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, AlertTriangle, Info, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Clock, AlertTriangle, Info } from 'lucide-react';
 import { PageLayout } from '../shared/components/layout/PageLayout';
 import { Card, CardContent } from '../shared/components/ui/Card';
 import { Button } from '../shared/components/ui/Button';
