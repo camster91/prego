@@ -11,7 +11,7 @@ Prego is a pregnancy exercise web app built with React 19, TypeScript, and Vite.
 - `npm run lint` — Run ESLint on all files
 - `npm run preview` — Preview production build
 
-**Note:** Build (`tsc -b`) passes clean. Lint has pre-existing errors (unused imports, react-refresh warnings, hook dependency warnings) — these are not regressions.
+**Note:** Both `build` and `lint` pass clean with zero errors.
 
 ## Architecture
 
@@ -31,7 +31,7 @@ Prego is a pregnancy exercise web app built with React 19, TypeScript, and Vite.
 
 ```
 src/
-├── app/              # App entry, routing (router.tsx)
+├── app/              # App entry, routing (router.tsx, layouts.tsx)
 ├── pages/            # Page components (one per route)
 ├── shared/
 │   ├── components/
