@@ -14,13 +14,13 @@ describe('filterExercises', () => {
 
     // All results should be safe for the given trimester
     trimester1.forEach((ex) => {
-      expect(ex.safeTrmesters).toContain(1);
+      expect(ex.safeTrimesters).toContain(1);
     });
     trimester2.forEach((ex) => {
-      expect(ex.safeTrmesters).toContain(2);
+      expect(ex.safeTrimesters).toContain(2);
     });
     trimester3.forEach((ex) => {
-      expect(ex.safeTrmesters).toContain(3);
+      expect(ex.safeTrimesters).toContain(3);
     });
   });
 
@@ -63,7 +63,7 @@ describe('filterExercises', () => {
       intensity: 'low'
     });
     result.forEach((ex) => {
-      expect(ex.safeTrmesters).toContain(3);
+      expect(ex.safeTrimesters).toContain(3);
       expect(ex.intensity).toBe('low');
     });
   });
@@ -95,7 +95,7 @@ describe('getExerciseById', () => {
 
   it('all exercises have required safety fields', () => {
     exercises.forEach((ex) => {
-      expect(ex.safeTrmesters.length).toBeGreaterThan(0);
+      expect(ex.safeTrimesters.length).toBeGreaterThan(0);
       expect(ex.contraindications).toBeDefined();
       expect(ex.modifications).toBeDefined();
       expect(ex.intensity).toBeDefined();

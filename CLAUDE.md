@@ -52,8 +52,13 @@ server/               # Express backend (Stripe webhooks, checkout, health check
 
 ## Key Conventions
 
+### Error Handling
+- Global `ErrorBoundary` wraps the app in `App.tsx` — catches unhandled React errors
+- Individual pages handle "not found" states (exercise, workout) with fallback UI
+- Server gracefully handles missing Stripe configuration (warns on startup, returns 503)
+
 ### Components
-- Functional components with hooks only — no class components
+- Functional components with hooks only — no class components (ErrorBoundary is the sole exception)
 - Pages use **named exports** with lazy loading via `.then()` pattern
 - Button variants use `class-variance-authority` (primary, secondary, ghost, danger, outline, success)
 - Card uses compound component pattern (Card, CardHeader, CardTitle, CardContent)
@@ -113,4 +118,6 @@ Express server (`server/index.js`):
 - **Pregnancy safety is critical**: exercises have trimester-appropriate filtering, contraindications, and modifications
 - Trimester calculation uses due date via `calculatePregnancyInfo()` in user store
 - Audio cues use Web Audio API directly (not the use-sound library) in ActiveWorkoutPage
-- PWA-capable: manifest.json and service worker meta tags in index.html
+- PWA-capable: manifest.json, service worker (`public/sw.js`), registered in `main.tsx`
+- Service worker uses network-first for navigation, cache-first for static assets
+- Icon-only buttons must include `aria-label` for accessibility

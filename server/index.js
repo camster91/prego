@@ -7,12 +7,31 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+// Validate required environment variables
+if (!process.env.STRIPE_SECRET_KEY) {
+  console.warn('Warning: STRIPE_SECRET_KEY not set. Stripe features will be disabled.');
+}
+if (!process.env.STRIPE_WEBHOOK_SECRET) {
+  console.warn('Warning: STRIPE_WEBHOOK_SECRET not set. Webhook verification will fail.');
+}
+
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 const APP_URL = process.env.APP_URL || 'https://prego.ashbi.ca';
 
+// Security headers
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+
 // Webhook needs raw body
 app.post('/api/webhooks/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
+  if (!stripe) return res.status(503).json({ error: 'Stripe not configured' });
   const sig = req.headers['stripe-signature'];
   try {
     const event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
@@ -37,6 +56,7 @@ app.use(express.static(join(__dirname, '../dist')));
 
 // Create checkout session
 app.post('/api/create-checkout-session', async (req, res) => {
+  if (!stripe) return res.status(503).json({ error: 'Stripe not configured' });
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -66,6 +86,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
 
 // Customer portal
 app.post('/api/create-portal-session', async (req, res) => {
+  if (!stripe) return res.status(503).json({ error: 'Stripe not configured' });
   try {
     const session = await stripe.billingPortal.sessions.create({
       customer: req.body.customerId,
