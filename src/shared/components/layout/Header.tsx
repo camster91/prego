@@ -31,7 +31,7 @@ function Header() {
             )}
 
             <Link to="/settings">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" aria-label="Settings">
                 <Settings className="w-5 h-5" />
               </Button>
             </Link>

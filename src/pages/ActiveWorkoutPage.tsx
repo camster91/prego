@@ -188,6 +188,7 @@ function ActiveWorkoutPage() {
           size="icon"
           onClick={() => setSoundEnabled(!soundEnabled)}
           className="text-white hover:bg-white/10"
+          aria-label={soundEnabled ? 'Mute sound' : 'Enable sound'}
         >
           {soundEnabled ? (
             <Volume2 className="w-6 h-6" />

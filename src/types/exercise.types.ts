@@ -34,7 +34,7 @@ export interface Exercise {
   videoUrl?: string;
 
   // Pregnancy-specific
-  safeTrmesters: Trimester[];
+  safeTrimesters: Trimester[];
   contraindications: string[];
   modifications: ExerciseModification[];
 

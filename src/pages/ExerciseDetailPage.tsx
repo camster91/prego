@@ -29,7 +29,7 @@ function ExerciseDetailPage() {
   }
 
   const isSafeForCurrentTrimester = profile
-    ? exercise.safeTrmesters.includes(profile.currentTrimester)
+    ? exercise.safeTrimesters.includes(profile.currentTrimester)
     : true;
 
   const currentTrimesterModification = profile
@@ -124,7 +124,7 @@ function ExerciseDetailPage() {
             <CardContent className="text-center">
               <p className="text-sm text-gray-500 mb-2">Safe for</p>
               <div className="flex justify-center gap-1">
-                {exercise.safeTrmesters.map((t) => (
+                {exercise.safeTrimesters.map((t) => (
                   <TrimesterBadge key={t} trimester={t} />
                 ))}
               </div>

@@ -153,5 +153,9 @@ export const selectTotalMinutesExercised = (state: WorkoutSessionState) =>
 export const selectRecentSessions = (state: WorkoutSessionState, limit = 5) =>
   state.completedSessions
     .filter(s => s.status === 'completed')
-    .sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime())
+    .sort((a, b) => {
+      const dateB = b.completedAt ? new Date(b.completedAt).getTime() : 0;
+      const dateA = a.completedAt ? new Date(a.completedAt).getTime() : 0;
+      return dateB - dateA;
+    })
     .slice(0, limit);
