@@ -1,102 +1,53 @@
-# Prego - Pregnancy Exercise App
+# Prego — Pregnancy Exercise App
 
-A modern, mobile-friendly web application for pregnancy-safe exercises with workout plans, progress tracking, and real-time timer guidance.
+**A modern, mobile-friendly application delivering pregnancy-safe exercises, guided workout plans, real-time timers, and progress tracking.**
 
-## Features
+As part of our **2026 App Portfolio Launch**, Prego is being finalized for Android and iOS app store submission via Capacitor. This standalone wellness app is designed to provide high-quality, accessible fitness guidance to expecting mothers.
 
-- **Onboarding Flow** - Personalized setup with due date calculation for automatic trimester tracking
-- **Exercise Library** - 12+ pregnancy-safe exercises with detailed instructions, filterable by trimester, category, and intensity
-- **Workout Plans** - 8 pre-built workout programs organized by trimester (5-15 minutes each)
-- **Active Workout Timer** - Real-time countdown with audio cues, pause/resume, skip controls, and exercise queue
-- **Progress Tracking** - Workout history, streak tracking, weekly activity charts, and achievement badges
-- **Settings** - Profile management, sound preferences, and workout customization
+## 📱 Features
 
-## Tech Stack
+- **Personalized Onboarding:** Automatic trimester tracking based on due date.
+- **Curated Exercise Library:** 12+ pregnancy-safe exercises filterable by trimester, category, and intensity.
+- **Guided Workout Plans:** 8 pre-built programs (5-15 mins) specifically tailored by trimester.
+- **Active Workout Timer:** Real-time countdowns, audio cues, and an intuitive exercise queue.
+- **Progress Tracking:** Weekly activity charts, streak tracking, and achievement badges.
+- **Offline Capable:** State is persisted locally for on-the-go workouts.
 
-- **React 19** + TypeScript
-- **Vite** for fast development and building
-- **Tailwind CSS v4** for styling
-- **Zustand** for state management (persisted to localStorage)
-- **React Router v6** for navigation
-- **Recharts** for progress visualization
-- **Lucide React** for icons
-- **date-fns** for date calculations
+## 🛠 Tech Stack
 
-## Getting Started
+- **Frontend:** React 19 + TypeScript
+- **Styling:** Tailwind CSS v4 + Lucide Icons
+- **State Management:** Zustand (persisted)
+- **Routing:** React Router v6
+- **Mobile Build:** Capacitor (for native iOS/Android packaging)
+- **Bundler:** Vite
 
-### Prerequisites
+## 🚀 Store Submission Prep (Action Items)
 
-- Node.js 18+
-- npm or yarn
+To prepare for the upcoming Google Play and Apple App Store launch:
+- [ ] Generate release keystore for Android signing.
+- [ ] Generate production App Icons and Splash Screens via `capacitor-assets`.
+- [ ] Create the Apple Developer provisioning profiles.
+- [ ] Finalize store listing metadata (Screenshots, Privacy Policy URL, App Description).
+- [ ] Implement optional GlowOS analytics telemetry (if applicable).
 
-### Installation
+## ⚡ Getting Started (Local Dev)
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/prego.git
+git clone https://github.com/camster91/prego.git
 cd prego
 
 # Install dependencies
 npm install
 
-# Start development server
+# Start the Vite dev server
 npm run dev
+
+# For native mobile preview:
+npx cap sync
+npx cap open android
 ```
 
-The app will be available at `http://localhost:5173`
-
-### Build for Production
-
-```bash
-npm run build
-```
-
-Production files will be in the `dist/` folder.
-
-### Preview Production Build
-
-```bash
-npm run preview
-```
-
-## Project Structure
-
-```
-src/
-├── app/           # App entry, providers, routing
-├── data/          # Mock exercise and workout data
-├── hooks/         # Custom hooks (timer)
-├── pages/         # Page components
-│   ├── HomePage.tsx
-│   ├── ExercisesPage.tsx
-│   ├── WorkoutsPage.tsx
-│   ├── ActiveWorkoutPage.tsx
-│   ├── ProgressPage.tsx
-│   └── SettingsPage.tsx
-├── shared/        # Reusable UI components
-│   ├── components/
-│   │   ├── ui/    # Button, Card, Badge, Modal
-│   │   └── layout/# Header, BottomNav, PageLayout
-│   └── utils/     # Utility functions
-├── stores/        # Zustand stores
-│   ├── userStore.ts
-│   └── workoutSessionStore.ts
-└── types/         # TypeScript definitions
-```
-
-## Exercise Categories
-
-- **Strength** - Wall push-ups, squats, leg lifts
-- **Cardio** - Seated marching, standing exercises
-- **Flexibility** - Cat-cow stretch, hip circles, shoulder rolls
-- **Pelvic Floor** - Kegel exercises
-- **Breathing** - Deep belly breathing
-- **Balance** - Bird dog, modified warrior poses
-
-## Safety Notice
-
-This app is for informational purposes only. Always consult with your healthcare provider before starting any exercise program during pregnancy.
-
-## License
-
-MIT
+---
+*Developed by Cameron Ashley / Nexus AI.*
