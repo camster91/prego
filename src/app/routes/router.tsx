@@ -15,6 +15,8 @@ const SettingsPage = lazy(() => import('../../pages/SettingsPage').then(m => ({ 
 const PrivacyPolicyPage = lazy(() => import('../../pages/PrivacyPolicyPage').then(m => ({ default: m.PrivacyPolicyPage })));
 const TermsOfServicePage = lazy(() => import('../../pages/TermsOfServicePage').then(m => ({ default: m.TermsOfServicePage })));
 const OnboardingPage = lazy(() => import('../../pages/OnboardingPage').then(m => ({ default: m.OnboardingPage })));
+const PricingPage = lazy(() => import('../../pages/PricingPage').then(m => ({ default: m.PricingPage })));
+const SuccessPage = lazy(() => import('../../pages/SuccessPage').then(m => ({ default: m.SuccessPage })));
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +30,8 @@ export const router = createBrowserRouter([
       { path: 'workouts/:workoutId', element: withSuspense(WorkoutDetailPage) },
       { path: 'progress', element: withSuspense(ProgressPage) },
       { path: 'settings', element: withSuspense(SettingsPage) },
+      { path: 'pricing', element: withSuspense(PricingPage) },
+      { path: 'success', element: withSuspense(SuccessPage) },
       { path: 'privacy', element: withSuspense(PrivacyPolicyPage) },
       { path: 'terms', element: withSuspense(TermsOfServicePage) }
     ]

@@ -7,3 +7,5 @@ export { WorkoutDetailPage } from './WorkoutDetailPage';
 export { ActiveWorkoutPage } from './ActiveWorkoutPage';
 export { ProgressPage } from './ProgressPage';
 export { SettingsPage } from './SettingsPage';
+export { PricingPage } from './PricingPage';
+export { SuccessPage } from './SuccessPage';
