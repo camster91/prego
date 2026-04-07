@@ -1,37 +1,56 @@
-# Prego — Pregnancy Exercise App
+# Prego
 
-**A modern, mobile-friendly application delivering pregnancy-safe exercises, guided workout plans, real-time timers, and progress tracking.**
+**Pregnancy Exercise App**
 
-As part of our **2026 App Portfolio Launch**, Prego is being finalized for Android and iOS app store submission via Capacitor. This standalone wellness app is designed to provide high-quality, accessible fitness guidance to expecting mothers.
+A modern, mobile-friendly application delivering pregnancy-safe exercises, guided workout plans, real-time timers, and progress tracking. Built with Capacitor for native iOS and Android deployment.
 
-## 📱 Features
+## Features
 
-- **Personalized Onboarding:** Automatic trimester tracking based on due date.
-- **Curated Exercise Library:** 12+ pregnancy-safe exercises filterable by trimester, category, and intensity.
-- **Guided Workout Plans:** 8 pre-built programs (5-15 mins) specifically tailored by trimester.
-- **Active Workout Timer:** Real-time countdowns, audio cues, and an intuitive exercise queue.
-- **Progress Tracking:** Weekly activity charts, streak tracking, and achievement badges.
-- **Offline Capable:** State is persisted locally for on-the-go workouts.
+### Personalized Experience
+- **Automatic Trimester Tracking:** Calculates current trimester based on due date
+- **Safe Exercise Library:** 12+ pregnancy-safe exercises vetted for each trimester
+- **Smart Filtering:** Filter by trimester, category, and intensity level
 
-## 🛠 Tech Stack
+### Workout Programs
+- **Guided Workout Plans:** 8 pre-built programs (5-15 minutes each)
+- **Trimester-Tailored:** Programs specifically designed for each pregnancy stage
+- **Custom Workouts:** Build your own workout from the exercise library
 
-- **Frontend:** React 19 + TypeScript
-- **Styling:** Tailwind CSS v4 + Lucide Icons
-- **State Management:** Zustand (persisted)
-- **Routing:** React Router v6
-- **Mobile Build:** Capacitor (for native iOS/Android packaging)
-- **Bundler:** Vite
+### Active Workout
+- **Real-time Timer:** Countdown timers with audio cues
+- **Exercise Queue:** Intuitive queue system for workout flow
+- **Rest Intervals:** Configurable rest periods between exercises
 
-## 🚀 Store Submission Prep (Action Items)
+### Progress Tracking
+- **Activity History:** Weekly activity charts and statistics
+- **Streak Tracking:** Maintain workout consistency
+- **Achievement Badges:** Unlock achievements for milestones
 
-To prepare for the upcoming Google Play and Apple App Store launch:
-- [ ] Generate release keystore for Android signing.
-- [ ] Generate production App Icons and Splash Screens via `capacitor-assets`.
-- [ ] Create the Apple Developer provisioning profiles.
-- [ ] Finalize store listing metadata (Screenshots, Privacy Policy URL, App Description).
-- [ ] Implement optional GlowOS analytics telemetry (if applicable).
+### Mobile-First
+- **Offline Capable:** State persisted locally for on-the-go workouts
+- **Native Apps:** iOS and Android via Capacitor
+- **PWA Support:** Install on any device
 
-## ⚡ Getting Started (Local Dev)
+## Tech Stack
+
+| Category | Technology |
+|----------|------------|
+| Frontend | React 19 + TypeScript |
+| Styling | Tailwind CSS v4 + Lucide Icons |
+| State | Zustand (persisted) |
+| Routing | React Router v7 |
+| Mobile | Capacitor 8 (iOS + Android) |
+| Build | Vite |
+| Charts | Recharts |
+| Audio | use-sound |
+
+## Prerequisites
+
+- Node.js 18+
+- npm 9+
+- For native builds: Android Studio and/or Xcode
+
+## Installation
 
 ```bash
 # Clone the repository
@@ -41,13 +60,162 @@ cd prego
 # Install dependencies
 npm install
 
-# Start the Vite dev server
+# Start development server
 npm run dev
-
-# For native mobile preview:
-npx cap sync
-npx cap open android
 ```
 
+## Usage
+
+### Development
+
+```bash
+# Start Vite dev server
+npm run dev
+
+# Preview production build
+npm run preview
+```
+
+### Native Mobile
+
+```bash
+# Build web assets
+npm run build
+
+# Sync to native projects
+npx cap sync
+
+# Open in Android Studio
+npx cap open android
+
+# Open in Xcode
+npx cap open ios
+```
+
+### Testing
+
+```bash
+# Run tests
+npm run test
+
+# Run tests in watch mode
+npm run test:watch
+```
+
+## Project Structure
+
+```
+src/
+├── components/            # React components
+│   ├── exercises/        # Exercise card and detail components
+│   ├── workout/          # Timer, queue, and workout player
+│   ├── progress/         # Charts and achievement components
+│   └── ui/               # Base UI components
+├── pages/                 # Route pages
+├── hooks/                 # Custom React hooks
+├── store/                 # Zustand state management
+├── data/                  # Exercise and workout data
+├── utils/                 # Utility functions
+└── types/                 # TypeScript definitions
+
+public/
+└── sounds/                # Audio files for timer cues
+
+server/
+└── index.js              # Express server (optional backend)
+```
+
+## Configuration
+
+### Capacitor
+
+Edit `capacitor.config.ts` for native app configuration:
+
+```typescript
+import type { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'com.yourcompany.prego',
+  appName: 'Prego',
+  webDir: 'dist',
+  server: {
+    androidScheme: 'https'
+  }
+};
+
+export default config;
+```
+
+### Environment Variables
+
+Create a `.env` file if needed for backend features:
+
+```env
+VITE_API_URL=https://api.example.com
+```
+
+## Store Submission Checklist
+
+Before submitting to app stores:
+
+- [ ] Generate release keystore for Android signing
+- [ ] Generate production App Icons and Splash Screens
+- [ ] Create Apple Developer provisioning profiles
+- [ ] Finalize store listing metadata
+  - [ ] App screenshots (phone, tablet)
+  - [ ] Privacy Policy URL
+  - [ ] App description and keywords
+- [ ] Configure app.json / app.config.js
+
+## Available Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run test` | Run Vitest |
+| `npm run preview` | Preview production build |
+
+## Data Structure
+
+### Exercise
+```typescript
+interface Exercise {
+  id: string;
+  name: string;
+  description: string;
+  trimester: 1 | 2 | 3 | 'all';
+  category: 'strength' | 'stretch' | 'cardio' | 'breathing';
+  intensity: 'low' | 'medium' | 'high';
+  duration: number; // seconds
+  instructions: string[];
+}
+```
+
+### Workout
+```typescript
+interface Workout {
+  id: string;
+  name: string;
+  description: string;
+  trimester: 1 | 2 | 3 | 'all';
+  exercises: Exercise[];
+  totalDuration: number;
+}
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push and open a Pull Request
+
+## License
+
+Proprietary - All rights reserved.
+
 ---
-*Developed by Cameron Ashley / Nexus AI.*
+Developed by Cameron Ashley / Nexus AI.
