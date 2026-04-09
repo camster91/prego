@@ -40,6 +40,7 @@ function ActiveWorkoutPage() {
 
   const { startWorkout, completeExercise, endWorkout, abandonWorkout } =
     useWorkoutSessionStore();
+  const currentSession = useWorkoutSessionStore((state) => state.currentSession);
 
   // Play sounds — useTimer uses configRef internally so even if timerConfig
   // changes when soundEnabled toggles, the timer interval won't restart
@@ -112,12 +113,14 @@ function ActiveWorkoutPage() {
 
   const { state, start, pause, resume, skip, goToExercise } = useTimer(timerConfig);
 
-  // Start workout session when component mounts
+  // Start workout session when component mounts — skip if resuming an existing session
   useEffect(() => {
-    if (workout) {
+    if (workout && currentSession?.workoutPlanId !== workout.id) {
       startWorkout(workout.id);
     }
-  }, [workout, startWorkout]);
+    // Only run on mount — don't restart when currentSession reference changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workout?.id]);
 
   const handleExit = () => {
     setShowExitModal(true);
