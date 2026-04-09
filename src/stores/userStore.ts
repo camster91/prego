@@ -10,6 +10,7 @@ interface UserState {
   setProfile: (profile: UserProfile) => void;
   updatePreferences: (preferences: Partial<UserPreferences>) => void;
   updateDueDate: (dueDate: Date) => void;
+  updateDoctorApproved: (approved: boolean) => void;
   completeOnboarding: () => void;
   clearProfile: () => void;
 }
@@ -74,6 +75,15 @@ export const useUserStore = create<UserState>()(
               currentWeek,
               currentTrimester
             }
+          });
+        }
+      },
+
+      updateDoctorApproved: (approved) => {
+        const currentProfile = get().profile;
+        if (currentProfile) {
+          set({
+            profile: { ...currentProfile, doctorApproved: approved }
           });
         }
       },

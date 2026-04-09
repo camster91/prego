@@ -159,7 +159,7 @@ export const workoutPlans: WorkoutPlan[] = [
       { exerciseId: 'prenatal-breathing', order: 1, durationSeconds: 60, restSeconds: 20 },
       { exerciseId: 'kegel-basic', order: 2, durationSeconds: 90, restSeconds: 30 },
       { exerciseId: 'cat-cow', order: 3, durationSeconds: 60, restSeconds: 20 },
-      { exerciseId: 'kegel-basic', order: 4, durationSeconds: 90, restSeconds: 0 }
+      { exerciseId: 'hip-circles', order: 4, durationSeconds: 90, restSeconds: 0 }
     ],
     totalDurationMinutes: 7,
     intensity: 'low',

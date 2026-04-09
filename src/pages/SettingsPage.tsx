@@ -25,6 +25,7 @@ function SettingsPage() {
   const profile = useUserStore((state) => state.profile);
   const updatePreferences = useUserStore((state) => state.updatePreferences);
   const updateDueDate = useUserStore((state) => state.updateDueDate);
+  const updateDoctorApproved = useUserStore((state) => state.updateDoctorApproved);
   const clearProfile = useUserStore((state) => state.clearProfile);
 
   const [showDueDateModal, setShowDueDateModal] = useState(false);
@@ -117,6 +118,7 @@ function SettingsPage() {
             icon={Shield}
             label="Doctor Approved"
             value={profile.doctorApproved ? 'Yes' : 'Not yet'}
+            onClick={() => updateDoctorApproved(!profile.doctorApproved)}
             isLast
           />
         </Card>
