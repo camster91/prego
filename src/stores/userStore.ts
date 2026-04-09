@@ -87,7 +87,13 @@ export const useUserStore = create<UserState>()(
       partialize: (state) => ({
         profile: state.profile,
         isOnboarded: state.isOnboarded
-      })
+      }),
+      // Rehydrate dates that were serialized as strings in localStorage
+      onRehydrateStorage: () => (state) => {
+        if (state?.profile?.dueDate && typeof state.profile.dueDate === 'string') {
+          state.profile.dueDate = new Date(state.profile.dueDate);
+        }
+      }
     }
   )
 );

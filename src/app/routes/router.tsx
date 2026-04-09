@@ -17,6 +17,7 @@ const TermsOfServicePage = lazy(() => import('../../pages/TermsOfServicePage').t
 const OnboardingPage = lazy(() => import('../../pages/OnboardingPage').then(m => ({ default: m.OnboardingPage })));
 const PricingPage = lazy(() => import('../../pages/PricingPage').then(m => ({ default: m.PricingPage })));
 const SuccessPage = lazy(() => import('../../pages/SuccessPage').then(m => ({ default: m.SuccessPage })));
+const NotFoundPage = lazy(() => import('../../pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 
 export const router = createBrowserRouter([
   {
@@ -46,5 +47,9 @@ export const router = createBrowserRouter([
   {
     path: '/onboarding',
     element: withSuspense(OnboardingPage)
+  },
+  {
+    path: '*',
+    element: withSuspense(NotFoundPage)
   }
 ]);

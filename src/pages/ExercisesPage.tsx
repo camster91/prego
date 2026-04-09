@@ -68,6 +68,7 @@ function ExercisesPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="input pl-12"
+            aria-label="Search exercises"
           />
         </div>
         <Button

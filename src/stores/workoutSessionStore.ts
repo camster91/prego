@@ -134,7 +134,25 @@ export const useWorkoutSessionStore = create<WorkoutSessionState>()(
       name: 'prego-workout-session-storage',
       partialize: (state) => ({
         completedSessions: state.completedSessions
-      })
+      }),
+      // Rehydrate dates that were serialized as strings in localStorage
+      onRehydrateStorage: () => (state) => {
+        if (state?.completedSessions) {
+          for (const session of state.completedSessions) {
+            if (typeof session.startedAt === 'string') {
+              session.startedAt = new Date(session.startedAt);
+            }
+            if (session.completedAt && typeof session.completedAt === 'string') {
+              session.completedAt = new Date(session.completedAt);
+            }
+            for (const ex of session.exercisesCompleted) {
+              if (typeof ex.completedAt === 'string') {
+                ex.completedAt = new Date(ex.completedAt);
+              }
+            }
+          }
+        }
+      }
     }
   )
 );

@@ -15,6 +15,13 @@ export function useTimer(config: TimerConfig) {
   const intervalRef = useRef<number | null>(null);
   const lastTickRef = useRef<number>(0);
 
+  // Store config in a ref so timer callbacks always see the latest
+  // without causing interval restarts when callbacks change
+  const configRef = useRef(config);
+  useEffect(() => {
+    configRef.current = config;
+  });
+
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -27,9 +34,8 @@ export function useTimer(config: TimerConfig) {
       const nextIndex = currentState.currentExerciseIndex + 1;
 
       if (nextIndex >= exercises.length) {
-        // Workout complete
-        config.onPhaseChange?.('complete');
-        config.onWorkoutComplete?.();
+        configRef.current.onPhaseChange?.('complete');
+        configRef.current.onWorkoutComplete?.();
         return {
           ...currentState,
           phase: 'complete',
@@ -38,9 +44,8 @@ export function useTimer(config: TimerConfig) {
         };
       }
 
-      // Start next exercise
       const nextExercise = exercises[nextIndex];
-      config.onPhaseChange?.('exercise');
+      configRef.current.onPhaseChange?.('exercise');
 
       return {
         ...currentState,
@@ -50,19 +55,18 @@ export function useTimer(config: TimerConfig) {
         remainingSeconds: nextExercise.durationSeconds
       };
     },
-    [config]
+    []
   );
 
   const handlePhaseComplete = useCallback(
     (currentState: TimerState): TimerState => {
       const { phase, currentExerciseIndex } = currentState;
-      const exercises = config.exercises;
+      const exercises = configRef.current.exercises;
 
       switch (phase) {
         case 'countdown': {
-          // Start first exercise
           const firstExercise = exercises[0];
-          config.onPhaseChange?.('exercise');
+          configRef.current.onPhaseChange?.('exercise');
           return {
             ...currentState,
             phase: 'exercise',
@@ -72,12 +76,11 @@ export function useTimer(config: TimerConfig) {
         }
 
         case 'exercise': {
-          config.onExerciseComplete?.(currentExerciseIndex);
+          configRef.current.onExerciseComplete?.(currentExerciseIndex);
           const currentExercise = exercises[currentExerciseIndex];
 
-          // Check if there's rest time
           if (currentExercise.restSeconds > 0) {
-            config.onPhaseChange?.('rest');
+            configRef.current.onPhaseChange?.('rest');
             return {
               ...currentState,
               phase: 'rest',
@@ -86,7 +89,6 @@ export function useTimer(config: TimerConfig) {
             };
           }
 
-          // No rest, go to next exercise or complete
           return moveToNextExercise(currentState, exercises);
         }
 
@@ -98,10 +100,10 @@ export function useTimer(config: TimerConfig) {
           return currentState;
       }
     },
-    [config, moveToNextExercise]
+    [moveToNextExercise]
   );
 
-  // Timer tick
+  // Timer tick — dependencies are stable (no config object)
   useEffect(() => {
     if (!state.isRunning || state.isPaused) {
       clearTimer();
@@ -120,14 +122,13 @@ export function useTimer(config: TimerConfig) {
 
         const newRemaining = Math.max(0, prev.remainingSeconds - elapsed);
 
-        // Handle phase transitions
         if (newRemaining <= 0) {
           return handlePhaseComplete(prev);
         }
 
         return { ...prev, remainingSeconds: newRemaining };
       });
-    }, 100); // Update every 100ms for smooth display
+    }, 100);
 
     return clearTimer;
   }, [state.isRunning, state.isPaused, handlePhaseComplete, clearTimer]);
@@ -151,22 +152,24 @@ export function useTimer(config: TimerConfig) {
 
   const reset = useCallback(() => {
     clearTimer();
+    const cfg = configRef.current;
     setState({
       phase: 'countdown',
-      totalSeconds: config.countdownSeconds,
-      remainingSeconds: config.countdownSeconds,
+      totalSeconds: cfg.countdownSeconds,
+      remainingSeconds: cfg.countdownSeconds,
       currentExerciseIndex: 0,
-      totalExercises: config.exercises.length,
+      totalExercises: cfg.exercises.length,
       isRunning: false,
       isPaused: false
     });
-  }, [config, clearTimer]);
+  }, [clearTimer]);
 
   const goToExercise = useCallback(
     (index: number) => {
-      if (index < 0 || index >= config.exercises.length) return;
+      const exercises = configRef.current.exercises;
+      if (index < 0 || index >= exercises.length) return;
 
-      const exercise = config.exercises[index];
+      const exercise = exercises[index];
       setState((prev) => ({
         ...prev,
         phase: 'exercise',
@@ -175,7 +178,7 @@ export function useTimer(config: TimerConfig) {
         remainingSeconds: exercise.durationSeconds
       }));
     },
-    [config.exercises]
+    []
   );
 
   return { state, start, pause, resume, skip, reset, goToExercise };

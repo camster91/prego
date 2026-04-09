@@ -41,13 +41,15 @@ function ActiveWorkoutPage() {
   const { startWorkout, completeExercise, endWorkout, abandonWorkout } =
     useWorkoutSessionStore();
 
-  // Play sounds
+  // Play sounds — useTimer uses configRef internally so even if timerConfig
+  // changes when soundEnabled toggles, the timer interval won't restart
   const playSound = useCallback(
     (type: 'beep' | 'complete' | 'finish') => {
       if (!soundEnabled) return;
 
       try {
-        const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        const AudioCtx = window.AudioContext || (window as globalThis.Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        if (!AudioCtx) return;
         const audioContext = new AudioCtx();
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();

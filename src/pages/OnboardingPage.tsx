@@ -129,6 +129,7 @@ function NameStep({
         onChange={(e) => onChange(e.target.value)}
         placeholder="Enter your name"
         className="input mb-6 text-lg"
+        aria-label="Your name"
         autoFocus
       />
 
@@ -184,6 +185,7 @@ function DueDateStep({
         min={minDate}
         max={maxDate}
         className="input mb-6 text-lg"
+        aria-label="Due date"
       />
 
       <Button

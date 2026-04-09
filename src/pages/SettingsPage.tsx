@@ -376,6 +376,9 @@ function SettingsToggle({
         <p className="text-sm text-gray-500">{description}</p>
       </div>
       <button
+        role="switch"
+        aria-checked={enabled}
+        aria-label={label}
         onClick={() => onToggle(!enabled)}
         className={cn(
           'w-12 h-7 rounded-full transition-colors relative',
