@@ -40,14 +40,17 @@ function ActiveWorkoutPage() {
 
   const { startWorkout, completeExercise, endWorkout, abandonWorkout } =
     useWorkoutSessionStore();
+  const currentSession = useWorkoutSessionStore((state) => state.currentSession);
 
-  // Play sounds
+  // Play sounds — useTimer uses configRef internally so even if timerConfig
+  // changes when soundEnabled toggles, the timer interval won't restart
   const playSound = useCallback(
     (type: 'beep' | 'complete' | 'finish') => {
       if (!soundEnabled) return;
 
       try {
-        const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        const AudioCtx = window.AudioContext || (window as globalThis.Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        if (!AudioCtx) return;
         const audioContext = new AudioCtx();
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
@@ -110,12 +113,14 @@ function ActiveWorkoutPage() {
 
   const { state, start, pause, resume, skip, goToExercise } = useTimer(timerConfig);
 
-  // Start workout session when component mounts
+  // Start workout session when component mounts — skip if resuming an existing session
   useEffect(() => {
-    if (workout) {
+    if (workout && currentSession?.workoutPlanId !== workout.id) {
       startWorkout(workout.id);
     }
-  }, [workout, startWorkout]);
+    // Only run on mount — don't restart when currentSession reference changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workout?.id]);
 
   const handleExit = () => {
     setShowExitModal(true);
@@ -345,8 +350,8 @@ function ActiveWorkoutPage() {
                   variant="ghost"
                   size="icon"
                   onClick={skip}
-                  disabled={state.phase === 'countdown'}
                   className="text-white hover:bg-white/10 disabled:opacity-30 w-12 h-12"
+                  aria-label="Skip"
                 >
                   <SkipForward className="w-6 h-6" />
                 </Button>
@@ -544,11 +549,29 @@ function ActiveWorkoutPage() {
       <Modal
         isOpen={showCompleteModal}
         onClose={() => {}}
-        title="How was your workout?"
+        title="Workout Complete!"
         showCloseButton={false}
         closeOnOverlayClick={false}
       >
-        <p className="text-gray-600 mb-4">Rate your perceived difficulty:</p>
+        {/* Workout Summary */}
+        <div className="bg-gray-50 rounded-xl p-4 mb-6">
+          <div className="grid grid-cols-2 gap-4 text-center">
+            <div>
+              <p className="text-2xl font-bold text-gray-900">
+                {timerConfig.exercises.length}
+              </p>
+              <p className="text-sm text-gray-500">Exercises</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900">
+                {workout ? Math.round(workout.totalDurationMinutes) : 0}
+              </p>
+              <p className="text-sm text-gray-500">Minutes</p>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-gray-600 mb-4">How did it feel?</p>
 
         <div className="flex justify-center gap-2 mb-6">
           {[1, 2, 3, 4, 5].map((rating) => (

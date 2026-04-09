@@ -1,12 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Play, Dumbbell, Clock, Flame, ChevronRight, Sparkles } from 'lucide-react';
-import { useEffect } from 'react';
+import { Play, Dumbbell, Clock, Flame, ChevronRight, Sparkles, RotateCcw, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { PageLayout } from '../shared/components/layout/PageLayout';
 import { Card, CardContent } from '../shared/components/ui/Card';
 import { Button } from '../shared/components/ui/Button';
 import { TrimesterBadge, IntensityBadge } from '../shared/components/ui/Badge';
 import { useUserStore, useWorkoutSessionStore, selectCompletedWorkoutsCount, selectTotalMinutesExercised } from '../stores';
-import { workoutPlans } from '../data/workouts';
+import { workoutPlans, getWorkoutById } from '../data/workouts';
 
 function HomePage() {
   const navigate = useNavigate();
@@ -14,6 +14,9 @@ function HomePage() {
   const isOnboarded = useUserStore((state) => state.isOnboarded);
   const completedWorkouts = useWorkoutSessionStore(selectCompletedWorkoutsCount);
   const totalMinutes = useWorkoutSessionStore(selectTotalMinutesExercised);
+  const currentSession = useWorkoutSessionStore((state) => state.currentSession);
+  const clearCurrentSession = useWorkoutSessionStore((state) => state.clearCurrentSession);
+  const [dismissedResume, setDismissedResume] = useState(false);
 
   // Redirect to onboarding if not completed
   useEffect(() => {
@@ -25,6 +28,10 @@ function HomePage() {
   if (!profile) {
     return null;
   }
+
+  const interruptedWorkout = currentSession && !dismissedResume
+    ? getWorkoutById(currentSession.workoutPlanId)
+    : null;
 
   // Get recommended workouts for current trimester
   const recommendedWorkouts = workoutPlans
@@ -47,6 +54,43 @@ function HomePage() {
           Week {profile.currentWeek} of your pregnancy journey
         </p>
       </div>
+
+      {/* Resume interrupted workout */}
+      {interruptedWorkout && (
+        <Card className="mb-6 bg-amber-50 border-amber-200">
+          <CardContent className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
+              <RotateCcw className="w-6 h-6 text-amber-600" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-amber-900">Resume workout?</p>
+              <p className="text-sm text-amber-700 truncate">
+                {interruptedWorkout.name} — {currentSession!.exercisesCompleted.length} exercise{currentSession!.exercisesCompleted.length !== 1 ? 's' : ''} done
+              </p>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <Button
+                size="sm"
+                onClick={() => navigate(`/workout/${interruptedWorkout.id}/active`)}
+                className="gap-1"
+              >
+                <Play className="w-3 h-3" />
+                Resume
+              </Button>
+              <button
+                onClick={() => {
+                  clearCurrentSession();
+                  setDismissedResume(true);
+                }}
+                className="p-1.5 text-amber-500 hover:text-amber-700 rounded-lg hover:bg-amber-100"
+                aria-label="Dismiss"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 gap-4 mb-8">

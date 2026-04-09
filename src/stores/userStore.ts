@@ -10,6 +10,7 @@ interface UserState {
   setProfile: (profile: UserProfile) => void;
   updatePreferences: (preferences: Partial<UserPreferences>) => void;
   updateDueDate: (dueDate: Date) => void;
+  updateDoctorApproved: (approved: boolean) => void;
   completeOnboarding: () => void;
   clearProfile: () => void;
 }
@@ -78,6 +79,15 @@ export const useUserStore = create<UserState>()(
         }
       },
 
+      updateDoctorApproved: (approved) => {
+        const currentProfile = get().profile;
+        if (currentProfile) {
+          set({
+            profile: { ...currentProfile, doctorApproved: approved }
+          });
+        }
+      },
+
       completeOnboarding: () => set({ isOnboarded: true }),
 
       clearProfile: () => set({ profile: null, isOnboarded: false })
@@ -87,7 +97,13 @@ export const useUserStore = create<UserState>()(
       partialize: (state) => ({
         profile: state.profile,
         isOnboarded: state.isOnboarded
-      })
+      }),
+      // Rehydrate dates that were serialized as strings in localStorage
+      onRehydrateStorage: () => (state) => {
+        if (state?.profile?.dueDate && typeof state.profile.dueDate === 'string') {
+          state.profile.dueDate = new Date(state.profile.dueDate);
+        }
+      }
     }
   )
 );

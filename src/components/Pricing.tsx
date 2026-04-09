@@ -1,20 +1,36 @@
 import { useState } from 'react';
-import { Check, Crown, Dumbbell, Heart } from 'lucide-react';
+import { Check, Crown, Dumbbell, Heart, AlertCircle } from 'lucide-react';
 
 export default function Pricing() {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleCheckout = async () => {
     setLoading(true);
+    setError(null);
     try {
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
+      if (!response.ok) {
+        throw new Error('Unable to start checkout. Please try again.');
+      }
       const data = await response.json();
-      if (data.url) window.location.href = data.url;
-    } catch (error) {
-      console.error('Checkout error:', error);
+      if (data.url) {
+        // Validate redirect URL is Stripe or same-origin
+        const targetUrl = new URL(data.url);
+        if (targetUrl.hostname.endsWith('stripe.com') || targetUrl.origin === window.location.origin) {
+          window.location.href = data.url;
+        } else {
+          throw new Error('Unexpected redirect URL.');
+        }
+      } else {
+        throw new Error('No checkout URL received.');
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -85,6 +101,13 @@ export default function Pricing() {
             </button>
           </div>
         </div>
+
+        {error && (
+          <div className="mt-6 max-w-3xl mx-auto flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <p>{error}</p>
+          </div>
+        )}
 
         <p className="text-center mt-8 text-gray-500 text-sm">
           Cancel anytime. All exercises reviewed by certified prenatal fitness experts.
