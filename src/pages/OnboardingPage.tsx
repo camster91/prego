@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Calendar, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
+import { Heart, Calendar, AlertCircle, CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react';
 import { Button } from '../shared/components/ui/Button';
 import { Card, CardContent } from '../shared/components/ui/Card';
 import { useUserStore, createUserProfile } from '../stores';
 import { cn } from '../shared/utils/cn';
 
-type Step = 'welcome' | 'name' | 'due-date' | 'health' | 'complete';
+const STEPS = ['welcome', 'name', 'due-date', 'health', 'complete'] as const;
+type Step = (typeof STEPS)[number];
 
 function OnboardingPage() {
   const navigate = useNavigate();
@@ -17,6 +18,13 @@ function OnboardingPage() {
   const [name, setName] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [doctorApproved, setDoctorApproved] = useState(false);
+
+  const goBack = () => {
+    const currentIndex = STEPS.indexOf(step);
+    if (currentIndex > 0) {
+      setStep(STEPS[currentIndex - 1]);
+    }
+  };
 
   const handleComplete = () => {
     const profile = createUserProfile({
@@ -30,19 +38,32 @@ function OnboardingPage() {
     navigate('/');
   };
 
+  const showBackButton = step !== 'welcome';
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary-50 to-sage-50 flex flex-col">
-      {/* Progress dots */}
-      <div className="flex justify-center gap-2 pt-8 pb-4">
-        {['welcome', 'name', 'due-date', 'health', 'complete'].map((s) => (
-          <div
-            key={s}
-            className={cn(
-              'w-2 h-2 rounded-full transition-colors',
-              step === s ? 'bg-primary-600' : 'bg-gray-300'
-            )}
-          />
-        ))}
+      {/* Header with back button and progress dots */}
+      <div className="relative flex items-center justify-center pt-8 pb-4 px-4">
+        {showBackButton && (
+          <button
+            onClick={goBack}
+            className="absolute left-4 p-2 rounded-full text-gray-500 hover:bg-white/50 transition-colors"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+        )}
+        <div className="flex gap-2">
+          {STEPS.map((s) => (
+            <div
+              key={s}
+              className={cn(
+                'w-2 h-2 rounded-full transition-colors',
+                step === s ? 'bg-primary-600' : 'bg-gray-300'
+              )}
+            />
+          ))}
+        </div>
       </div>
 
       <div className="flex-1 flex items-center justify-center p-6">
@@ -245,6 +266,12 @@ function HealthStep({
           </label>
         </CardContent>
       </Card>
+
+      {!doctorApproved && (
+        <p className="text-sm text-amber-600 mb-4 text-center">
+          We recommend getting your doctor's approval before starting exercises.
+        </p>
+      )}
 
       <Button
         size="lg"

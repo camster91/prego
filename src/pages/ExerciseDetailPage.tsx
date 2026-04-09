@@ -36,6 +36,16 @@ function ExerciseDetailPage() {
     ? exercise.modifications.find((m) => m.trimester === profile.currentTrimester)
     : null;
 
+  // Check if any of the user's health conditions match exercise contraindications
+  const matchingContraindications = profile?.healthConditions.length
+    ? exercise.contraindications.filter((contra) =>
+        profile.healthConditions.some((condition) =>
+          contra.toLowerCase().includes(condition.toLowerCase()) ||
+          condition.toLowerCase().includes(contra.toLowerCase())
+        )
+      )
+    : [];
+
   return (
     <PageLayout noPadding noBottomPadding={false}>
       {/* Back button */}
@@ -82,6 +92,26 @@ function ExerciseDetailPage() {
                 <p className="text-sm text-amber-700 mt-1">
                   This exercise may not be safe during trimester {profile.currentTrimester}.
                   Please consult your healthcare provider.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Contraindication warning for user's health conditions */}
+      {matchingContraindications.length > 0 && (
+        <div className="px-4 mb-6">
+          <Card className="bg-red-50 border-red-200">
+            <CardContent className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-red-800">
+                  May conflict with your health conditions
+                </p>
+                <p className="text-sm text-red-700 mt-1">
+                  Based on your profile, this exercise may not be suitable.
+                  Please consult your healthcare provider before attempting.
                 </p>
               </div>
             </CardContent>

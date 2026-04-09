@@ -12,16 +12,18 @@ const navItems = [
 
 function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 pb-safe" aria-label="Main navigation">
       <div className="max-w-lg mx-auto px-4">
         <div className="flex items-center justify-around h-16">
           {navItems.map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
               to={to}
+              end={to === '/'}
+              aria-label={label}
               className={({ isActive }) =>
                 cn(
-                  'flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-colors',
+                  'flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2',
                   isActive
                     ? 'text-primary-600'
                     : 'text-gray-400 hover:text-gray-600'
@@ -36,6 +38,7 @@ function BottomNav() {
                       isActive && 'scale-110'
                     )}
                     strokeWidth={isActive ? 2.5 : 2}
+                    aria-hidden="true"
                   />
                   <span className="text-xs font-medium">{label}</span>
                 </>

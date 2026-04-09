@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { Trophy, Flame, Clock, Calendar, TrendingUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Trophy, Flame, Clock, Calendar, TrendingUp, Dumbbell } from 'lucide-react';
 import {
   AreaChart,
   Area,
@@ -10,7 +11,7 @@ import {
 } from 'recharts';
 import { PageLayout } from '../shared/components/layout/PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '../shared/components/ui/Card';
-import { Badge } from '../shared/components/ui/Badge';
+import { Button } from '../shared/components/ui/Button';
 import {
   useWorkoutSessionStore,
   selectCompletedWorkoutsCount,
@@ -225,8 +226,13 @@ function ProgressPage() {
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="h-48 flex items-center justify-center text-gray-400">
-              <p>Complete workouts to see your activity chart</p>
+            <div className="h-48 flex flex-col items-center justify-center text-center">
+              <TrendingUp className="w-10 h-10 text-gray-300 mb-3" />
+              <p className="text-gray-500 font-medium mb-1">No activity yet</p>
+              <p className="text-gray-400 text-sm mb-4">Complete your first workout to start tracking progress</p>
+              <Link to="/workouts">
+                <Button size="sm" variant="secondary">Browse Workouts</Button>
+              </Link>
             </div>
           )}
         </CardContent>
@@ -250,6 +256,8 @@ function ProgressPage() {
                     className={`w-12 h-12 mx-auto mb-2 rounded-full flex items-center justify-center text-2xl ${
                       isEarned ? 'bg-amber-100' : 'bg-gray-100'
                     }`}
+                    role="img"
+                    aria-label={`${achievement.title}: ${achievement.description}${isEarned ? ' (earned)' : ''}`}
                   >
                     {achievement.icon}
                   </div>
@@ -317,21 +325,23 @@ function ProgressPage() {
                       <p className="font-medium text-gray-900">
                         {Math.round(session.totalDurationSeconds / 60)} min
                       </p>
-                      {session.perceivedDifficulty && (
-                        <Badge variant="default" size="sm">
-                          Difficulty: {session.perceivedDifficulty}/5
-                        </Badge>
-                      )}
+                      <p className="text-xs text-gray-400">
+                        {session.exercisesCompleted.length} exercise{session.exercisesCompleted.length !== 1 ? 's' : ''}
+                        {session.perceivedDifficulty ? ` · ${session.perceivedDifficulty}/5` : ''}
+                      </p>
                     </div>
                   </div>
                 );
               })}
             </div>
           ) : (
-            <div className="text-center py-8 text-gray-400">
-              <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>No workouts completed yet</p>
-              <p className="text-sm">Start exercising to see your history</p>
+            <div className="text-center py-8">
+              <Dumbbell className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500 font-medium mb-1">Ready to start?</p>
+              <p className="text-gray-400 text-sm mb-4">Your workout history will appear here after your first session</p>
+              <Link to="/workouts">
+                <Button size="sm" variant="secondary">Find a Workout</Button>
+              </Link>
             </div>
           )}
         </CardContent>
