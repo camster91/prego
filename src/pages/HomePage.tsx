@@ -26,7 +26,14 @@ function HomePage() {
   }, [isOnboarded, navigate]);
 
   if (!profile) {
-    return null;
+    return (
+      <PageLayout>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+          <div className="w-12 h-12 border-4 border-gray-200 border-t-primary-500 rounded-full animate-spin" />
+          <p className="text-gray-500">Loading your profile...</p>
+        </div>
+      </PageLayout>
+    );
   }
 
   const interruptedWorkout = currentSession && !dismissedResume
