@@ -150,3 +150,14 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Prego server running on port ${PORT}`);
 });
+
+// TTL cleanup for rate limiter — prevents memory leaks
+const RATE_LIMITER_TTL = 10 * 60 * 1000; // 10 min
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, record] of rateLimitMap) {
+    if (record.length === 0 || record[record.length - 1] < now - RATE_LIMITER_TTL) {
+      rateLimitMap.delete(key);
+    }
+  }
+}, 5 * 60 * 1000); // cleanup every 5 min
