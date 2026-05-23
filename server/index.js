@@ -31,9 +31,12 @@ app.use((req, res, next) => {
 
 // Simple in-memory rate limiter
 const rateLimitMap = new Map();
+
 function rateLimit(windowMs = 60000, maxRequests = 10) {
   return (req, res, next) => {
-    const key = req.ip;
+    // Try x-forwarded-for for proxies, fallback to socket.remoteAddress, then req.ip
+    const clientIp = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket?.remoteAddress || req.ip || 'unknown';
+    const key = clientIp;
     const now = Date.now();
     const windowStart = now - windowMs;
 
