@@ -42,7 +42,7 @@ A modern, mobile-friendly application delivering pregnancy-safe exercises, guide
 | Mobile | Capacitor 8 (iOS + Android) |
 | Build | Vite |
 | Charts | Recharts |
-| Audio | use-sound |
+| Audio | Web Audio API |
 
 ## Prerequisites
 
