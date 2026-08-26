@@ -20,4 +20,12 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // This module deliberately exports a route configuration alongside lazy
+    // page components, so it is not a Fast Refresh component module.
+    files: ['src/app/routes/router.tsx'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 ])
