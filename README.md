@@ -1,221 +1,111 @@
 # Prego
 
-**Pregnancy Exercise App**
+A mobile-first pregnancy exercise app with trimester-aware workouts, guided timers and progress tracking.
 
-A modern, mobile-friendly application delivering pregnancy-safe exercises, guided workout plans, real-time timers, and progress tracking. Built with Capacitor for native iOS and Android deployment.
+## What it does
+
+Prego helps expectant parents follow short, gentle workouts suited to their stage of pregnancy. After a quick onboarding step that asks for the due date, the app works out the current week and trimester and filters the exercise library and workout plans to match. Workouts run with a full-screen timer, rest intervals and audio cues, and completed sessions feed a progress page with charts, a streak and achievement badges.
+
+It is a React single-page app that also installs as a PWA, with a Capacitor Android project and a small Express server for Stripe subscription checkout.
+
+Prego is a fitness companion, not medical advice. Users should follow their care provider's guidance.
 
 ## Features
 
-### Personalized Experience
-- **Automatic Trimester Tracking:** Calculates current trimester based on due date
-- **Safe Exercise Library:** 12+ pregnancy-safe exercises vetted for each trimester
-- **Smart Filtering:** Filter by trimester, category, and intensity level
+- **Onboarding** that calculates pregnancy week and trimester from the due date
+- **Exercise library** (12 exercises) with filters for trimester, category (strength, stretch, cardio, breathing) and intensity, plus step-by-step instructions, contraindications and modifications on each detail page
+- **Workout plans** (8 pre-built routines) tailored to each trimester
+- **Active workout player** with countdown timer, exercise queue, rest phases and Web Audio cues (sound can be turned off)
+- **Progress page** with weekly activity charts (Recharts), current streak and achievement badges
+- **Settings** for profile and preferences, plus privacy policy and terms pages
+- **Pricing and checkout** pages backed by Stripe Checkout and the Stripe customer portal
+- **Installable PWA** with a service worker (network-first navigation, cache-first static assets)
+- **Local persistence**: profile and workout history are stored on the device with Zustand
 
-### Workout Programs
-- **Guided Workout Plans:** 8 pre-built programs (5-15 minutes each)
-- **Trimester-Tailored:** Programs specifically designed for each pregnancy stage
-- **Custom Workouts:** Build your own workout from the exercise library
+## Tech stack
 
-### Active Workout
-- **Real-time Timer:** Countdown timers with audio cues
-- **Exercise Queue:** Intuitive queue system for workout flow
-- **Rest Intervals:** Configurable rest periods between exercises
-
-### Progress Tracking
-- **Activity History:** Weekly activity charts and statistics
-- **Streak Tracking:** Maintain workout consistency
-- **Achievement Badges:** Unlock achievements for milestones
-
-### Mobile-First
-- **Offline Capable:** State persisted locally for on-the-go workouts
-- **Native Apps:** iOS and Android via Capacitor
-- **PWA Support:** Install on any device
-
-## Tech Stack
-
-| Category | Technology |
-|----------|------------|
-| Frontend | React 19 + TypeScript |
-| Styling | Tailwind CSS v4 + Lucide Icons |
-| State | Zustand (persisted) |
-| Routing | React Router v7 |
-| Mobile | Capacitor 8 (iOS + Android) |
-| Build | Vite |
+| Layer | Technology |
+|---|---|
+| UI | React 19, TypeScript (strict), React Router 7 with lazy-loaded pages |
+| Build | Vite 7 |
+| Styling | Tailwind CSS 4, class-variance-authority, lucide-react icons |
+| State | Zustand 5 (persisted), TanStack Query 5 |
 | Charts | Recharts |
-| Audio | Web Audio API |
+| Dates | date-fns |
+| Mobile | Capacitor 8 (Android) |
+| Server | Express 4, Stripe SDK |
+| Testing | Vitest, Testing Library, jsdom |
+| Container | Dockerfile |
 
-## Prerequisites
-
-- Node.js 18+
-- npm 9+
-- For native builds: Android Studio and/or Xcode
-
-## Installation
+## Getting started
 
 ```bash
-# Clone the repository
 git clone https://github.com/camster91/prego.git
 cd prego
-
-# Install dependencies
 npm install
-
-# Start development server
-npm run dev
+npm run dev          # http://localhost:5173
 ```
 
-## Usage
-
-### Development
+The front end runs without any configuration. For the payment endpoints, copy `.env.example` to `.env` and add your own Stripe test keys, then build and start the server:
 
 ```bash
-# Start Vite dev server
-npm run dev
-
-# Preview production build
-npm run preview
-```
-
-### Native Mobile
-
-```bash
-# Build web assets
 npm run build
-
-# Sync to native projects
-npx cap sync
-
-# Open in Android Studio
-npx cap open android
-
-# Open in Xcode
-npx cap open ios
+npm start            # Express serves dist/ and the API on port 3000
 ```
 
-### Testing
+Without Stripe keys the server still starts and the payment endpoints return 503.
+
+### Scripts
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Vite dev server |
+| `npm run build` | Type-check (`tsc -b`) and build to `dist/` |
+| `npm start` | Start the Express server |
+| `npm run preview` | Preview the production build |
+| `npm run lint` | ESLint |
+| `npm test` | Run tests once (Vitest) |
+| `npm run test:watch` | Tests in watch mode |
+
+### Android
 
 ```bash
-# Run tests
-npm run test
-
-# Run tests in watch mode
-npm run test:watch
+npm run build
+npx cap sync android
+npx cap open android
 ```
 
-## Project Structure
+## Testing
+
+```bash
+npm test
+```
+
+Tests in `src/test/` cover pregnancy week and trimester calculation, exercise filtering, the user and workout-session stores, and the workout timer hook.
+
+## Project structure
 
 ```
 src/
-├── components/            # React components
-│   ├── exercises/        # Exercise card and detail components
-│   ├── workout/          # Timer, queue, and workout player
-│   ├── progress/         # Charts and achievement components
-│   └── ui/               # Base UI components
-├── pages/                 # Route pages
-├── hooks/                 # Custom React hooks
-├── store/                 # Zustand state management
-├── data/                  # Exercise and workout data
-├── utils/                 # Utility functions
-└── types/                 # TypeScript definitions
-
-public/
-└── sounds/                # Audio files for timer cues
-
+├── app/             # App root, providers, router and layouts
+├── pages/           # Home, onboarding, exercises, workouts, active workout, progress, settings, pricing, legal
+├── components/      # Feature components (pricing)
+├── shared/          # UI kit (Button, Card, Badge, Modal), layout, utilities
+├── hooks/           # useTimer
+├── stores/          # Zustand stores (user profile, workout sessions)
+├── data/            # Exercise and workout definitions
+├── types/           # Domain types
+└── test/            # Vitest specs
 server/
-└── index.js              # Express server (optional backend)
+└── index.js         # Express: SPA hosting, Stripe checkout, portal, webhook, health check
+android/             # Capacitor Android project
 ```
 
-## Configuration
+## API
 
-### Capacitor
-
-Edit `capacitor.config.ts` for native app configuration:
-
-```typescript
-import type { CapacitorConfig } from '@capacitor/cli';
-
-const config: CapacitorConfig = {
-  appId: 'com.yourcompany.prego',
-  appName: 'Prego',
-  webDir: 'dist',
-  server: {
-    androidScheme: 'https'
-  }
-};
-
-export default config;
-```
-
-### Environment Variables
-
-Create a `.env` file if needed for backend features:
-
-```env
-VITE_API_URL=https://api.example.com
-```
-
-## Store Submission Checklist
-
-Before submitting to app stores:
-
-- [ ] Generate release keystore for Android signing
-- [ ] Generate production App Icons and Splash Screens
-- [ ] Create Apple Developer provisioning profiles
-- [ ] Finalize store listing metadata
-  - [ ] App screenshots (phone, tablet)
-  - [ ] Privacy Policy URL
-  - [ ] App description and keywords
-- [ ] Configure app.json / app.config.js
-
-## Available Scripts
-
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
-| `npm run test` | Run Vitest |
-| `npm run preview` | Preview production build |
-
-## Data Structure
-
-### Exercise
-```typescript
-interface Exercise {
-  id: string;
-  name: string;
-  description: string;
-  trimester: 1 | 2 | 3 | 'all';
-  category: 'strength' | 'stretch' | 'cardio' | 'breathing';
-  intensity: 'low' | 'medium' | 'high';
-  duration: number; // seconds
-  instructions: string[];
-}
-```
-
-### Workout
-```typescript
-interface Workout {
-  id: string;
-  name: string;
-  description: string;
-  trimester: 1 | 2 | 3 | 'all';
-  exercises: Exercise[];
-  totalDuration: number;
-}
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push and open a Pull Request
-
-## License
-
-Proprietary - All rights reserved.
-
----
-Developed by Cameron Ashley / Nexus AI.
+| Method | Path | Purpose |
+|---|---|---|
+| `POST` | `/api/create-checkout-session` | Start a Stripe subscription checkout |
+| `POST` | `/api/create-portal-session` | Open the Stripe customer portal |
+| `POST` | `/api/webhooks/stripe` | Stripe webhook receiver |
+| `GET` | `/api/health` | Health check |
