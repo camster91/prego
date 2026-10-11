@@ -1,3 +1,4 @@
+import { usePregnancyStage } from '../hooks/usePregnancyStage';
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Filter, ChevronRight, Clock, X } from 'lucide-react';
@@ -8,7 +9,6 @@ import { IntensityBadge, Badge } from '../shared/components/ui/Badge';
 import { Modal } from '../shared/components/ui/Modal';
 import { ExercisePlaceholder } from '../shared/components/ui/ExercisePlaceholder';
 import { filterExercises } from '../data/exercises';
-import { useUserStore } from '../stores';
 import type { ExerciseCategory, IntensityLevel, Trimester } from '../types';
 
 const categories: { value: ExerciseCategory; label: string }[] = [
@@ -27,12 +27,12 @@ const intensities: { value: IntensityLevel; label: string }[] = [
 ];
 
 function ExercisesPage() {
-  const profile = useUserStore((state) => state.profile);
+  const stage = usePregnancyStage();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedTrimester, setSelectedTrimester] = useState<Trimester | undefined>(
-    profile?.currentTrimester
+    stage.currentTrimester
   );
   const [selectedCategory, setSelectedCategory] = useState<ExerciseCategory | undefined>();
   const [selectedIntensity, setSelectedIntensity] = useState<IntensityLevel | undefined>();
@@ -57,7 +57,7 @@ function ExercisesPage() {
   };
 
   return (
-    <PageLayout title="Exercise Library" subtitle="Pregnancy-safe exercises for every stage">
+    <PageLayout title="Exercise Library" subtitle="Exercise previews · Professional review pending">
       {/* Search and Filter Bar */}
       <div className="flex gap-3 mb-6">
         <div className="flex-1 relative">
@@ -139,7 +139,7 @@ function ExercisesPage() {
                     {exercise.name}
                   </h3>
                   <p className="text-sm text-gray-500 line-clamp-1">
-                    {exercise.description}
+                    Instructions available after professional review.
                   </p>
                   <div className="flex items-center gap-2 mt-2">
                     <span className="text-xs text-gray-400 flex items-center gap-1">
@@ -176,7 +176,7 @@ function ExercisesPage() {
           {/* Trimester Filter */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">
-              Safe for Trimester
+              Draft trimester tags
             </label>
             <div className="flex gap-2">
               {[1, 2, 3].map((t) => (

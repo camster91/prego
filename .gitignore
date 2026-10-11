@@ -29,3 +29,9 @@ dist-ssr
 *.sw?
 
 .claude/
+
+# Native/browser validation output
+playwright-report/
+test-results/
+ios/build/
+android/local.properties

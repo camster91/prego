@@ -55,6 +55,7 @@ function Modal({
   useEffect(() => {
     if (!isOpen || !modalRef.current) return;
 
+    const previous = document.activeElement as HTMLElement | null;
     modalRef.current.focus();
 
     const handleTab = (e: KeyboardEvent) => {
@@ -68,17 +69,17 @@ function Modal({
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
 
-      if (e.shiftKey && document.activeElement === first) {
+      if (e.shiftKey && (document.activeElement === first || document.activeElement === modalRef.current)) {
         e.preventDefault();
         last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
+      } else if (!e.shiftKey && (document.activeElement === last || document.activeElement === modalRef.current)) {
         e.preventDefault();
         first.focus();
       }
     };
 
     document.addEventListener('keydown', handleTab);
-    return () => document.removeEventListener('keydown', handleTab);
+    return () => { document.removeEventListener('keydown', handleTab); previous?.focus(); };
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -109,7 +110,7 @@ function Modal({
         ref={modalRef}
         tabIndex={-1}
         className={cn(
-          'relative z-10 w-full bg-white rounded-2xl shadow-xl animate-slide-up',
+          'relative z-10 w-full max-h-[85dvh] overflow-y-auto bg-white rounded-2xl shadow-xl animate-slide-up',
           sizeClasses[size]
         )}
       >

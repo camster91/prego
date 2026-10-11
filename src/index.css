@@ -2,32 +2,32 @@
 
 @theme {
   /* Pregnancy-friendly, calming palette */
-  --color-primary-50: #f0f9ff;
-  --color-primary-100: #e0f2fe;
-  --color-primary-200: #bae6fd;
-  --color-primary-300: #7dd3fc;
-  --color-primary-400: #38bdf8;
-  --color-primary-500: #0ea5e9;
-  --color-primary-600: #0284c7;
-  --color-primary-700: #0369a1;
-  --color-primary-800: #075985;
-  --color-primary-900: #0c4a6e;
+  --color-primary-50: #eef3ef;
+  --color-primary-100: #dce8df;
+  --color-primary-200: #c4d8ca;
+  --color-primary-300: #a8c5b5;
+  --color-primary-400: #7fa58f;
+  --color-primary-500: #527f66;
+  --color-primary-600: #3d6650;
+  --color-primary-700: #30533f;
+  --color-primary-800: #294737;
+  --color-primary-900: #22332c;
 
-  --color-accent-50: #fdf4ff;
-  --color-accent-100: #fae8ff;
-  --color-accent-200: #f5d0fe;
-  --color-accent-300: #f0abfc;
-  --color-accent-400: #e879f9;
-  --color-accent-500: #d946ef;
-  --color-accent-600: #c026d3;
-  --color-accent-700: #a21caf;
-  --color-accent-800: #86198f;
-  --color-accent-900: #701a75;
+  --color-accent-50: #fcf4ef;
+  --color-accent-100: #f7e6db;
+  --color-accent-200: #f0d1bf;
+  --color-accent-300: #e8b29b;
+  --color-accent-400: #d59077;
+  --color-accent-500: #b9745a;
+  --color-accent-600: #a56048;
+  --color-accent-700: #85503f;
+  --color-accent-800: #6b4336;
+  --color-accent-900: #52352c;
 
-  --color-sage-50: #f6f7f6;
-  --color-sage-100: #e3e7e3;
-  --color-sage-200: #c7cfc7;
-  --color-sage-300: #a3b0a3;
+  --color-sage-50: #faf8f4;
+  --color-sage-100: #edf0e9;
+  --color-sage-200: #d7ded3;
+  --color-sage-300: #b7c8ba;
   --color-sage-400: #7d8f7d;
   --color-sage-500: #627462;
   --color-sage-600: #4d5c4d;
@@ -143,4 +143,38 @@
 /* Safe area for mobile bottom nav */
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+@layer base {
+  html { color-scheme: light; scroll-behavior: smooth; }
+  button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+  button { min-height: 44px; }
+  :focus-visible { outline: 3px solid var(--color-primary-600); outline-offset: 3px; }
+  input, textarea, select { font-size: 1rem; }
+  img, video { max-width: 100%; }
+}
+@utility pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+@utility pb-nav { padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px)); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --color-sage-50: #17221c; --color-sage-100: #233229; --color-sage-200: #37483d; --color-sage-300: #536d5b;
+    --color-white: #202e25; --color-gray-50: #233229; --color-gray-100: #2b3b31; --color-gray-200: #3a4e40;
+    --color-gray-300: #708875; --color-gray-400: #a6b6aa; --color-gray-500: #b1bfb5; --color-gray-600: #becac1; --color-gray-700: #d0d9d2;
+    --color-primary-50: #243a2c; --color-primary-100: #314b3a; --color-primary-700: #b5d1bd; --color-primary-800: #c5dacb; --color-primary-900: #dce8df;
+    --color-accent-700: #e8b29b; --color-gray-900: #f2f5ef;
+  }
+  .bg-primary-900 { background-color: #345b43; }
+  .text-white { color: #fff; }
+  .bg-gray-900 { background-color: #17221c; }
+  .bg-primary-900 .text-primary-900 { color: #fff; }
+}
+
+@media (prefers-color-scheme: dark) {
+  .text-primary-600, .text-primary-500 { color: #c5dacb; }
+  .text-accent-600, .text-accent-500 { color: #e8b29b; }
+  .text-red-600, .text-red-700 { color: #ffb4a8; }
 }

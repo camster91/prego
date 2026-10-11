@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Calendar, AlertCircle, CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Calendar, AlertCircle, CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react';
 import { Button } from '../shared/components/ui/Button';
 import { Card, CardContent } from '../shared/components/ui/Card';
 import { useUserStore, createUserProfile } from '../stores';
+import { parseCalendarDate, calculatePregnancyInfo } from '../stores/userStore';
 import { cn } from '../shared/utils/cn';
 
 const STEPS = ['welcome', 'name', 'due-date', 'health', 'complete'] as const;
@@ -28,8 +29,8 @@ function OnboardingPage() {
 
   const handleComplete = () => {
     const profile = createUserProfile({
-      displayName: name,
-      dueDate: new Date(dueDate),
+      displayName: name.trim(),
+      dueDate: parseCalendarDate(dueDate),
       doctorApproved
     });
 
@@ -106,15 +107,13 @@ function OnboardingPage() {
 function WelcomeStep({ onNext }: { onNext: () => void }) {
   return (
     <div className="text-center max-w-md animate-fade-in">
-      <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-accent-500 rounded-3xl flex items-center justify-center mx-auto mb-8">
-        <Heart className="w-10 h-10 text-white" fill="white" />
-      </div>
+      <img src="/media/prego-studio.webp" alt="A calm studio space with a pregnant woman resting" className="mb-8 aspect-[4/3] w-full rounded-3xl object-cover" />
       <h1 className="text-3xl font-bold text-gray-900 mb-4">
         Welcome to Prego
       </h1>
       <p className="text-gray-600 mb-8">
-        Your personal pregnancy fitness companion. Safe, effective exercises
-        tailored to your journey.
+        Movement for every stage of pregnancy. A little space for you,
+        with clear information and no pressure.
       </p>
       <Button size="lg" onClick={onNext} fullWidth className="gap-2">
         Get Started
@@ -177,7 +176,7 @@ function DueDateStep({
   onChange: (v: string) => void;
   onNext: () => void;
 }) {
-  const isValid = value.length > 0;
+  const isValid = calculatePregnancyInfo(parseCalendarDate(value)).status === 'pregnancy';
 
   // Calculate min and max dates (roughly 9 months range)
   const today = new Date();
@@ -196,7 +195,7 @@ function DueDateStep({
         When is your due date?
       </h2>
       <p className="text-gray-600 mb-8">
-        This helps us recommend exercises appropriate for your stage of pregnancy.
+        This helps organise your stage information. It does not determine exercise eligibility.
       </p>
 
       <input
@@ -257,10 +256,10 @@ function HealthStep({
             />
             <div>
               <p className="font-medium text-gray-900">
-                I have my doctor's approval
+                I understand Prego does not provide medical clearance
               </p>
               <p className="text-sm text-gray-500">
-                My healthcare provider has cleared me for prenatal exercise.
+                A checkbox cannot assess whether exercise is appropriate for me. I will follow individual advice from my healthcare professional.
               </p>
             </div>
           </label>
@@ -269,13 +268,14 @@ function HealthStep({
 
       {!doctorApproved && (
         <p className="text-sm text-amber-600 mb-4 text-center">
-          We recommend getting your doctor's approval before starting exercises.
+          Please read this notice before continuing. Guided workouts remain unavailable until professional review.
         </p>
       )}
 
       <Button
         size="lg"
         onClick={onNext}
+        disabled={!doctorApproved}
         fullWidth
         className="gap-2"
       >
@@ -301,12 +301,12 @@ function CompleteStep({ onComplete }: { onComplete: () => void }) {
         You're all set!
       </h2>
       <p className="text-gray-600 mb-8">
-        Your personalized pregnancy fitness journey starts now. Let's keep
-        you and your baby healthy and active.
+        Your space is ready. Explore the app, your preferences and trusted
+        resources while the guided library is reviewed.
       </p>
 
       <Button size="lg" onClick={onComplete} fullWidth className="gap-2">
-        Start Exercising
+        Explore Prego
         <ArrowRight className="w-5 h-5" />
       </Button>
     </div>

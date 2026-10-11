@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { durableStorage } from '../lib/storage';
 import type { UserProfile, UserPreferences, Trimester } from '../types';
 
 interface UserState {
@@ -15,25 +16,30 @@ interface UserState {
   clearProfile: () => void;
 }
 
-// Calculate current week and trimester from due date
-export function calculatePregnancyInfo(dueDate: Date): { currentWeek: number; currentTrimester: Trimester } {
-  const today = new Date();
-  const dueDateObj = new Date(dueDate);
-
-  // Pregnancy is ~40 weeks from last menstrual period
-  // Due date is 40 weeks from conception date
-  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
-  const weeksUntilDue = Math.ceil((dueDateObj.getTime() - today.getTime()) / msPerWeek);
-  const currentWeek = Math.max(1, Math.min(40, 40 - weeksUntilDue));
-
-  let currentTrimester: Trimester = 1;
-  if (currentWeek > 27) {
-    currentTrimester = 3;
-  } else if (currentWeek > 13) {
-    currentTrimester = 2;
+// Calendar-day arithmetic avoids DST and time-of-day drift. Legacy display fields
+// are retained for migration; eligibility uses the explicit stage status below.
+export function calculatePregnancyInfo(dueDate: Date, today = new Date()): {
+  currentWeek: number; currentTrimester: Trimester; status: 'pregnancy' | 'date-passed' | 'out-of-range' | 'unknown';
+} {
+  const date = new Date(dueDate);
+  const day = (value: Date) => Date.UTC(value.getFullYear(), value.getMonth(), value.getDate()) / 86400000;
+  if (!Number.isFinite(date.getTime()) || !Number.isFinite(today.getTime())) {
+    return { currentWeek: 0, currentTrimester: 1, status: 'unknown' };
   }
+  const daysUntilDue = day(date) - day(today);
+  const currentWeek = Math.max(1, Math.min(40, Math.floor((280 - daysUntilDue) / 7)));
+  return {
+    currentWeek,
+    currentTrimester: currentWeek >= 28 ? 3 : currentWeek >= 14 ? 2 : 1,
+    status: daysUntilDue < 0 ? 'date-passed' : daysUntilDue > 280 ? 'out-of-range' : 'pregnancy'
+  };
+}
 
-  return { currentWeek, currentTrimester };
+export function parseCalendarDate(value: string): Date {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return new Date(NaN);
+  const [year, month, date] = value.split('-').map(Number);
+  const parsed = new Date(year, month - 1, date);
+  return parsed.getFullYear() === year && parsed.getMonth() === month - 1 && parsed.getDate() === date ? parsed : new Date(NaN);
 }
 
 const defaultPreferences: UserPreferences = {
@@ -65,6 +71,7 @@ export const useUserStore = create<UserState>()(
       },
 
       updateDueDate: (dueDate) => {
+        if (!Number.isFinite(dueDate.getTime())) return;
         const currentProfile = get().profile;
         if (currentProfile) {
           const { currentWeek, currentTrimester } = calculatePregnancyInfo(dueDate);
@@ -93,6 +100,10 @@ export const useUserStore = create<UserState>()(
       clearProfile: () => set({ profile: null, isOnboarded: false })
     }),
     {
+      skipHydration: true,
+      storage: createJSONStorage(() => durableStorage),
+      version: 1,
+      migrate: (state) => state,
       name: 'prego-user-storage',
       partialize: (state) => ({
         profile: state.profile,
@@ -125,6 +136,6 @@ export function createUserProfile(data: {
     currentTrimester,
     healthConditions: data.healthConditions || [],
     doctorApproved: data.doctorApproved || false,
-    preferences: defaultPreferences
+    preferences: { ...defaultPreferences, reminderDays: [] }
   };
 }

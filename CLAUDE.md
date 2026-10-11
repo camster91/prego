@@ -1,13 +1,13 @@
 # CLAUDE.md — Prego
 
-Prego is a mobile-first React web app for pregnancy-safe exercises. It provides guided workout plans, an exercise library, progress tracking, and achievement badges across all three trimesters.
+Prego is a React/Capacitor pregnancy movement companion with Today, Move, Learn, Progress and You. Exercise content is draft: never label it approved or enable guided workouts without qualified review and an approved screening/eligibility contract. See docs/PRODUCT-REQUIREMENTS.md and docs/RELEASE-READINESS.md.
 
 **Production URL**: https://prego.ashbi.ca
 
 ## Tech Stack
 
 - **Frontend**: React 19, TypeScript 5.9, Vite 7, Tailwind CSS v4
-- **State**: Zustand 5 (persisted to localStorage), TanStack React Query v5
+- **State**: Zustand 5 (versioned browser storage or encrypted native storage), TanStack React Query v5
 - **Routing**: React Router v7 with lazy-loaded pages
 - **Backend**: Express 4 (serves SPA + Stripe API endpoints)
 - **Mobile**: Capacitor 8 (iOS/Android)
@@ -70,7 +70,7 @@ server/               # Express backend (Stripe webhooks, checkout, health check
 - Use `cn()` from `@/shared/utils/cn` to merge classnames
 
 ### State Management
-- Zustand stores with `persist` middleware (localStorage)
+- Zustand stores with `persist` middleware using src/lib/storage.ts; native keychain/encrypted storage, web localStorage; preserve migrations and complete deletion
 - localStorage keys: `prego-user-storage`, `prego-workout-session-storage`
 - Memoized selector functions for derived state (e.g. `selectCompletedWorkoutsCount`)
 
@@ -115,9 +115,9 @@ Express server (`server/index.js`):
 
 ## Domain-Specific Notes
 
-- **Pregnancy safety is critical**: exercises have trimester-appropriate filtering, contraindications, and modifications
-- Trimester calculation uses due date via `calculatePregnancyInfo()` in user store
+- **Pregnancy safety is critical**: legacy draft trimester tags are not clinical approval; src/lib/contentReview.ts fails closed until review and screening rules are supplied
+- Stage derives from calendar dates via calculatePregnancyInfo()/usePregnancyStage(); never use stale profile week fields for selection. Explicit unknown/out-of-range/date-passed states never grant eligibility.
 - Audio cues use Web Audio API directly (not the use-sound library) in ActiveWorkoutPage
 - PWA-capable: manifest.json, service worker (`public/sw.js`), registered in `main.tsx`
-- Service worker uses network-first for navigation, cache-first for static assets
+- Production service worker is generated from the complete immutable asset bundle by scripts/generate-service-worker.mjs; native builds do not register it
 - Icon-only buttons must include `aria-label` for accessibility

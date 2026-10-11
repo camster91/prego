@@ -17,6 +17,10 @@ import { Button } from '../shared/components/ui/Button';
 import { TrimesterBadge } from '../shared/components/ui/Badge';
 import { Modal } from '../shared/components/ui/Modal';
 import { useUserStore } from '../stores';
+import { usePregnancyStage } from '../hooks/usePregnancyStage';
+import { parseCalendarDate } from '../stores/userStore';
+import { deleteLocalData } from '../lib/dataControls';
+import { DataControls } from '../components/DataControls';
 import { format, differenceInDays } from 'date-fns';
 import { cn } from '../shared/utils/cn';
 
@@ -26,7 +30,8 @@ function SettingsPage() {
   const updatePreferences = useUserStore((state) => state.updatePreferences);
   const updateDueDate = useUserStore((state) => state.updateDueDate);
   const updateDoctorApproved = useUserStore((state) => state.updateDoctorApproved);
-  const clearProfile = useUserStore((state) => state.clearProfile);
+  const stage = usePregnancyStage();
+  const [resetError, setResetError] = useState('');
 
   const [showDueDateModal, setShowDueDateModal] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
@@ -51,18 +56,17 @@ function SettingsPage() {
 
   const handleSaveDueDate = () => {
     if (newDueDate) {
-      updateDueDate(new Date(newDueDate));
+      updateDueDate(parseCalendarDate(newDueDate));
       setShowDueDateModal(false);
     }
   };
 
-  const handleReset = () => {
-    clearProfile();
-    navigate('/onboarding');
+  const handleReset = async () => {
+    try { await deleteLocalData(); navigate('/onboarding'); } catch { setResetError('Deletion could not finish. Please try again.'); }
   };
 
   return (
-    <PageLayout title="Settings" subtitle="Manage your profile and preferences">
+    <PageLayout title="You" subtitle="Manage your profile and preferences">
       {/* Profile Summary */}
       <Card className="mb-6">
         <CardContent>
@@ -75,9 +79,9 @@ function SettingsPage() {
                 {profile.displayName}
               </h2>
               <div className="flex items-center gap-2 mt-1">
-                <TrimesterBadge trimester={profile.currentTrimester} />
+                <TrimesterBadge trimester={stage.currentTrimester} />
                 <span className="text-sm text-gray-500">
-                  Week {profile.currentWeek}
+                  Week {stage.currentWeek}
                 </span>
               </div>
             </div>
@@ -116,8 +120,8 @@ function SettingsPage() {
           />
           <SettingsItem
             icon={Shield}
-            label="Doctor Approved"
-            value={profile.doctorApproved ? 'Yes' : 'Not yet'}
+            label="Health notice"
+            value={profile.doctorApproved ? 'Acknowledged' : 'Not recorded'}
             onClick={() => updateDoctorApproved(!profile.doctorApproved)}
             isLast
           />
@@ -190,9 +194,10 @@ function SettingsPage() {
                 onChange={(e) =>
                   updatePreferences({ preferredDuration: parseInt(e.target.value) })
                 }
+                aria-label="Preferred session duration"
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-600"
               />
-              <div className="flex justify-between text-xs text-gray-400 mt-1">
+              <div className="flex justify-between text-xs text-gray-600 mt-1">
                 <span>5 min</span>
                 <span>30 min</span>
               </div>
@@ -227,9 +232,11 @@ function SettingsPage() {
         </Card>
       </div>
 
+      <DataControls />
+      <p role="alert" className="text-red-700">{resetError}</p>
       {/* Danger Zone */}
       <div>
-        <h3 className="text-sm font-medium text-red-500 uppercase tracking-wider mb-3">
+        <h3 className="text-sm font-medium text-red-700 uppercase tracking-wider mb-3">
           Danger Zone
         </h3>
         <Card padding="none">
@@ -241,7 +248,7 @@ function SettingsPage() {
               <Trash2 className="w-5 h-5 text-red-600" />
             </div>
             <div className="flex-1">
-              <p className="font-medium text-red-600">Reset App</p>
+              <p className="font-medium text-red-600">Delete data</p>
               <p className="text-sm text-gray-500">
                 Delete all data and start fresh
               </p>
@@ -260,6 +267,7 @@ function SettingsPage() {
           Updating your due date will recalculate your current trimester and week.
         </p>
         <input
+          aria-label="New due date"
           type="date"
           value={newDueDate}
           onChange={(e) => setNewDueDate(e.target.value)}
@@ -283,7 +291,7 @@ function SettingsPage() {
       <Modal
         isOpen={showResetModal}
         onClose={() => setShowResetModal(false)}
-        title="Reset App?"
+        title="Delete data?"
       >
         <p className="text-gray-600 mb-6">
           This will delete all your data including workout history and progress.
@@ -341,7 +349,7 @@ function SettingsItem({
         <p className="font-medium text-gray-900">{label}</p>
       </div>
       {value && <span className="text-gray-500">{value}</span>}
-      {showArrow && onClick && <ChevronRight className="w-5 h-5 text-gray-400" />}
+      {showArrow && onClick && <ChevronRight className="w-5 h-5 text-gray-600" />}
     </Component>
   );
 }
