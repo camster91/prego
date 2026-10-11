@@ -19,7 +19,9 @@ Android lint succeeds with nonfatal warnings, primarily launcher/resource lint p
 
 ## Remote native evidence
 
-The unsigned iOS simulator build passed on macOS in [Native validation run 38144611291](https://github.com/camster91/prego/actions/runs/38144611291), including all native plugins. The Android job stopped at SDK setup because the action's default obsolete `tools` package is no longer available. Workflows now request the supported SDK packages explicitly; the replacement run must pass before remote Android evidence is complete.
+Both jobs passed in [Native validation run 38144840912](https://github.com/camster91/prego/actions/runs/38144840912): Android debug APK, unsigned release AAB and lint; unsigned iOS simulator compilation on macOS with all native plugins. The Android SDK action's obsolete default `tools` package was replaced with explicit supported packages.
+
+[Web validation run 38144868347](https://github.com/camster91/prego/actions/runs/38144868347) passed lint, TypeScript, all 68 regression tests, production build and all 15 browser/accessibility scenarios. The existing build-only workflow was manually disabled in the repository; it has been re-enabled. Both passing runs validated source commit `4b155bc145d9eda87c327b0c81aba880987e8868`; subsequent documentation updates do not alter the app binaries.
 
 ## Release-blocking evidence still missing
 
