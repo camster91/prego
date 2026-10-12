@@ -2,7 +2,32 @@
   "purpose": "Usability testing only; no unreviewed exercise participation",
   "bundleId": "com.prego.app",
   "reviewStatus": "clinical review pending",
-  "testflight": { "status": "awaiting signing configuration", "appId": null, "teamId": null, "version": null, "build": null, "commit": null, "artifactSha256": null, "uploadRunUrl": null, "processingVerifiedAt": null, "internalGroup": null, "firstInstallVerifiedAt": null },
-  "googlePlay": { "status": "awaiting signing configuration", "track": "internal", "version": null, "build": null, "commit": null, "artifactSha256": null, "uploadRunUrl": null, "processingVerifiedAt": null, "optInUrl": null, "firstInstallVerifiedAt": null },
+  "testflight": {
+    "status": "blocked: signing/account settings missing in GitHub Actions",
+    "appId": null,
+    "teamId": null,
+    "version": null,
+    "build": null,
+    "commit": null,
+    "artifactSha256": null,
+    "uploadRunUrl": null,
+    "processingVerifiedAt": null,
+    "internalGroup": null,
+    "firstInstallVerifiedAt": null,
+    "configurationCheckRunUrl": "https://github.com/camster91/prego/actions/runs/38278671034"
+  },
+  "googlePlay": {
+    "status": "blocked: signing/account settings missing in GitHub Actions",
+    "track": "internal",
+    "version": null,
+    "build": null,
+    "commit": null,
+    "artifactSha256": null,
+    "uploadRunUrl": null,
+    "processingVerifiedAt": null,
+    "optInUrl": null,
+    "firstInstallVerifiedAt": null,
+    "configurationCheckRunUrl": "https://github.com/camster91/prego/actions/runs/38278671034"
+  },
   "deviceResults": []
 }
