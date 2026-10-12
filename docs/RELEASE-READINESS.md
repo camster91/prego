@@ -23,6 +23,8 @@ Both jobs passed in [Native validation run 38144840912](https://github.com/camst
 
 [Web validation run 38144868347](https://github.com/camster91/prego/actions/runs/38144868347) passed lint, TypeScript, all 68 regression tests, production build and all 15 browser/accessibility scenarios. The existing build-only workflow was manually disabled in the repository; it has been re-enabled. Both passing runs validated source commit `4b155bc145d9eda87c327b0c81aba880987e8868`; subsequent documentation updates do not alter the app binaries.
 
+Fresh Android packaging after the beta data-control changes passed locally on October 12 (`assembleDebug`, `bundleRelease`, `lintDebug`). Updated debug APK/unsigned AAB hashes are in `native-artifact-checksums.json`. These are not Google Play signed upload artifacts.
+
 ## Internal testing preparation — October 12
 
 The owner requested TestFlight and Google Play internal testing. The manual Native validation workflow now checks signing configuration before building, verifies web/native checks, and calls a signed IPA/AAB upload workflow only when explicitly dispatched with `publish_internal=true`. Normal PR checks cannot distribute. See [INTERNAL-TESTING.md](INTERNAL-TESTING.md) for exact secure settings and tester instructions; [BETA-EVIDENCE.json](BETA-EVIDENCE.json) records store processing/install results without inventing them.
