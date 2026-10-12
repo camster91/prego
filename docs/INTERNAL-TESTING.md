@@ -36,6 +36,8 @@ Repository **secrets**:
 | `ANDROID_KEY_PASSWORD` | Android | Upload key password |
 | `PLAY_SERVICE_ACCOUNT_JSON` | Android | Service account JSON authorized in Play Console to release to testing tracks; Android Publisher API enabled |
 
+If you already have the signing files, run `scripts/configure-beta-secrets.sh both` locally after `gh auth login`. The helper prompts for file paths and hides passwords, saves them directly through GitHub CLI, and does not trigger an upload. It requires a local GitHub account/token allowed to manage repository Actions secrets.
+
 Use a local base64 tool that does not print credentials into a recorded session, or a local script piping directly to `gh secret set NAME`. Credentials are decoded only into temporary CI files, private permissions are set, and files/keychains are removed in cleanup steps.
 
 ## Account prerequisites
