@@ -2,8 +2,9 @@ import { Capacitor } from "@capacitor/core";
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
 import { useUserStore, useWorkoutSessionStore } from "../stores";
-import { durableStorage, flushStorage, storageHealth } from "./storage";
+import { flushStorage, storageHealth } from "./storage";
 import type { UserProfile, WorkoutSession } from "../types";
+import { replaceDataRecords } from "./storageTransaction";
 
 export interface Backup {
   format: "prego-backup";
@@ -202,32 +203,41 @@ export async function exportBackup() {
   }
 }
 export async function restoreBackup(backup: Backup) {
-  // Validation completes before any mutation. Replacement is explicitly confirmed in UI.
-  await deleteLocalData();
-  useUserStore.setState({
-    profile: backup.profile,
-    isOnboarded: backup.isOnboarded,
-  });
-  useWorkoutSessionStore.setState({
-    completedSessions: backup.completedSessions,
-  });
+  // Revalidate at the API boundary; callers cannot bypass file validation.
+  const validated = parseBackup(JSON.stringify(backup));
   await flushStorage();
+  const user = { profile: validated.profile, isOnboarded: validated.isOnboarded };
+  const sessions = { currentSession: null, currentExerciseIndex: 0, isPaused: false, completedSessions: validated.completedSessions };
+  await replaceDataRecords({
+    "prego-user-storage": JSON.stringify({ state: user, version: 1 }),
+    "prego-workout-session-storage": JSON.stringify({ state: sessions, version: 1 }),
+    "prego-active-timer": null,
+  });
+  updateMemory(user, sessions);
+}
+function updateMemory(
+  user: Pick<ReturnType<typeof useUserStore.getState>, 'profile' | 'isOnboarded'>,
+  sessions: Pick<ReturnType<typeof useWorkoutSessionStore.getState>, 'currentSession' | 'currentExerciseIndex' | 'isPaused' | 'completedSessions'>,
+) {
+  // The transaction already wrote and verified these values. Avoid duplicate
+  // background writes (especially recreating records after full deletion).
+  const userStorage = useUserStore.persist.getOptions().storage;
+  const sessionStorage = useWorkoutSessionStore.persist.getOptions().storage;
+  const memoryOnly = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
+  useUserStore.persist.setOptions({ storage: memoryOnly });
+  useWorkoutSessionStore.persist.setOptions({ storage: memoryOnly });
+  try {
+    useUserStore.setState(user);
+    useWorkoutSessionStore.setState(sessions);
+  } finally {
+    useUserStore.persist.setOptions({ storage: userStorage });
+    useWorkoutSessionStore.persist.setOptions({ storage: sessionStorage });
+  }
 }
 export async function deleteLocalData() {
-  useUserStore.getState().clearProfile();
-  useWorkoutSessionStore.setState({
-    currentSession: null,
-    currentExerciseIndex: 0,
-    isPaused: false,
-    completedSessions: [],
-  });
   await flushStorage();
-  for (const key of [
-    "prego-user-storage",
-    "prego-workout-session-storage",
-    "prego-active-timer",
-  ])
-    await durableStorage.removeItem(key);
+  await replaceDataRecords({ "prego-user-storage": null, "prego-workout-session-storage": null, "prego-active-timer": null });
+  updateMemory({ profile: null, isOnboarded: false }, { currentSession: null, currentExerciseIndex: 0, isPaused: false, completedSessions: [] });
   if (Capacitor.isNativePlatform()) {
     try {
       await Filesystem.deleteFile({

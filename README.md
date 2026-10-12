@@ -37,7 +37,13 @@ Android requires JDK 21 and SDK 36. Run `./gradlew assembleDebug bundleRelease l
 
 ## Billing
 
-The native RevenueCat adapter uses the current offering's lifetime package and named `pregnancy_pass` entitlement. Configure store products and public native SDK keys, then complete real sandbox purchase/restore tests. Leave VITE_PURCHASES_ENABLED=false until release gates pass. Never place secret provider keys in VITE_* variables. The legacy Express/Stripe server remains in server/; the app no longer initiates that checkout or presents its return URL as proof of payment.
+The native RevenueCat adapter uses the current offering's lifetime package and named `pregnancy_pass` entitlement. Configure store products and public native SDK keys, then complete real sandbox purchase/restore tests. Leave VITE_PURCHASES_ENABLED=false until release gates pass. Never place secret provider keys in VITE_* variables. The Express server serves the app and a health check; legacy Stripe routes return HTTP 410 and cannot initiate payments or customer portal sessions.
+
+## Internal testing
+
+The requested beta targets are TestFlight internal testing and Google Play's internal track. The manual Native validation workflow can sign/upload to both after configuration and passing checks; PRs never distribute. See [secure setup and tester instructions](docs/INTERNAL-TESTING.md). Guided workouts and purchases remain disabled for this usability beta. No upload is claimed until signed artifacts, store processing and tester installation are verified.
+
+Restore/deletion now use a verified transaction journal before updating in-memory records. Failed replacements roll back; interrupted operations recover before app hydration. Native journals use the same encrypted storage as records. Keep an exported backup for device loss or full browser-storage deletion.
 
 ## Project map
 

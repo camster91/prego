@@ -48,6 +48,7 @@ function SettingsPage() {
             Get Started
           </Button>
         </div>
+        <DataControls />
       </PageLayout>
     );
   }

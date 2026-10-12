@@ -5,13 +5,85 @@ on:
   push:
     branches: [master]
   workflow_dispatch:
+    inputs:
+      publish_internal:
+        description: Upload the verified usability beta to the selected internal testing stores
+        type: boolean
+        default: false
+      platform:
+        type: choice
+        options: [both, ios, android]
+        default: both
+      version:
+        description: Marketing version (major.minor.patch)
+        type: string
+        default: '1.0.0'
+      build_number:
+        description: Build number higher than any previous Apple/Google build
+        type: string
+        default: '2'
 permissions:
   contents: read
 concurrency:
-  group: native-${{ github.ref }}
-  cancel-in-progress: true
+  group: native-${{ github.ref }}-${{ github.event_name == 'workflow_dispatch' && inputs.publish_internal && 'distribution' || 'validation' }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' || !inputs.publish_internal }}
 jobs:
+  beta-config:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify internal distribution settings before building
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_internal
+        env:
+          BETA_PLATFORM: ${{ inputs.platform }}
+          PREGO_VERSION_NAME: ${{ inputs.version }}
+          PREGO_BUILD_NUMBER: ${{ inputs.build_number }}
+          APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+          APPLE_APP_ID: ${{ vars.APPLE_APP_ID }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+          IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+          IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          IOS_PROFILE_BASE64: ${{ secrets.IOS_PROFILE_BASE64 }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          PREGO_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          PREGO_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          PREGO_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          RESULT=0
+          if [ "$BETA_PLATFORM" = 'ios' ] || [ "$BETA_PLATFORM" = 'both' ]; then
+            node scripts/check-beta-config.mjs ios || RESULT=1
+          fi
+          if [ "$BETA_PLATFORM" = 'android' ] || [ "$BETA_PLATFORM" = 'both' ]; then
+            node scripts/check-beta-config.mjs android || RESULT=1
+          fi
+          exit "$RESULT"
+  beta-web:
+    needs: beta-config
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_internal
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: node --test scripts/test/*.test.mjs
+      - run: python3 scripts/test/play-upload.test.py
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
   android:
+    needs: beta-config
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -40,6 +112,7 @@ jobs:
             android/app/build/outputs/apk/debug/*.apk
             android/app/build/outputs/bundle/release/*.aab
   ios:
+    needs: beta-config
     runs-on: macos-15
     timeout-minutes: 30
     steps:
@@ -61,3 +134,12 @@ jobs:
         with:
           name: ios-simulator-${{ github.sha }}
           path: ios/build/Build/Products/Debug-iphonesimulator/*.app
+  internal-distribution:
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_internal
+    needs: [android, ios, beta-web]
+    uses: ./.github/workflows/internal-testing.yml
+    with:
+      platform: ${{ inputs.platform }}
+      version: ${{ inputs.version }}
+      build_number: ${{ inputs.build_number }}
+    secrets: inherit

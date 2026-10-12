@@ -24,6 +24,8 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
+      - run: node --test scripts/test/*.test.mjs
+      - run: python3 scripts/test/play-upload.test.py
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e

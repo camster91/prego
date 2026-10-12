@@ -157,3 +157,35 @@ test("dark mode remains readable without horizontal overflow", async ({
     )
     .toBeTruthy();
 });
+
+test('backup restore replaces records and a failed replacement preserves the previous profile', async ({ page }) => {
+  await onboard(page);
+  await page.getByRole('link', { name: 'You', exact: true }).click();
+  const backup = await page.evaluate(() => ({
+    format: 'prego-backup', version: 1, exportedAt: new Date().toISOString(), isOnboarded: true,
+    profile: { ...JSON.parse(localStorage.getItem('prego-user-storage')!).state.profile, displayName: 'Sam' },
+    completedSessions: [],
+  }));
+  await page.locator('input[type=file]').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
+  await page.getByRole('button', { name: 'Restore this backup' }).click();
+  await expect(page.getByRole('heading', { name: 'Sam', exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'Sam', exact: true })).toBeVisible();
+  await page.evaluate(() => {
+    const original = Storage.prototype.setItem;
+    let failed = false;
+    Storage.prototype.setItem = function (key, value) {
+      if (!failed && key === 'prego-user-storage') { failed = true; throw new Error('Simulated disk failure'); }
+      return original.call(this, key, value);
+    };
+  });
+  backup.profile.displayName = 'Taylor';
+  await page.locator('input[type=file]').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
+  await page.getByRole('button', { name: 'Restore this backup' }).click();
+  await expect(page.getByRole('status')).toContainText('Restoration could not finish');
+  await page.getByRole('button', { name: 'Close', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Sam', exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'Sam', exact: true })).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('prego-data-transaction'))).toBeNull();
+});

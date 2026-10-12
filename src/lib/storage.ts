@@ -33,7 +33,7 @@ const read = async (key: string) => {
     localStorage.getItem(key)
   );
 };
-function validate(key: string, text: string) {
+export function validateStoredRecord(key: string, text: string) {
   const parsed = JSON.parse(text);
   if (key === "prego-user-storage") {
     const state = parsed?.state;
@@ -120,7 +120,7 @@ export const durableStorage: StateStorage = {
     try {
       const primary = await read(key);
       if (primary !== null) {
-        validate(key, primary);
+        validateStoredRecord(key, primary);
         if (Capacitor.isNativePlatform()) {
           if ((await SecureStorage.get(key, false, false)) === null) {
             await put(key, primary);
@@ -137,7 +137,7 @@ export const durableStorage: StateStorage = {
       }
       const backup = await read(`${key}::shadow`);
       if (backup !== null) {
-        validate(key, backup);
+        validateStoredRecord(key, backup);
         await put(key, backup);
         storageHealth.report(
           "Recovered a local data copy. Export a backup in You.",
@@ -148,7 +148,7 @@ export const durableStorage: StateStorage = {
       try {
         const backup = await read(`${key}::shadow`);
         if (backup !== null) {
-          validate(key, backup);
+          validateStoredRecord(key, backup);
           await put(key, backup);
           storageHealth.report(
             "Recovered a local data copy. Export a backup in You.",
@@ -186,6 +186,7 @@ export const durableStorage: StateStorage = {
         localStorage.removeItem(key);
         localStorage.removeItem(`${key}::shadow`);
       }
+      failedWrites.delete(key);
     });
   },
 };
@@ -196,3 +197,18 @@ export async function flushStorage() {
       "Some changes could not be saved. Export your data and try again.",
     );
 }
+
+// Used by the journalled data-control transaction. Unlike normal background
+// saves, these writes reject and verify before reporting success.
+export const transactionStorage = {
+  get: read,
+  async set(key: string, value: string) {
+    await put(key, value);
+    if ((await read(key)) !== value) throw new Error("Saved copy verification failed");
+  },
+  async remove(key: string) {
+    await remove(key);
+    localStorage.removeItem(key);
+    if ((await read(key)) !== null) throw new Error("Deletion verification failed");
+  },
+};

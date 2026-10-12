@@ -9,7 +9,7 @@ Prego is a React/Capacitor pregnancy movement companion with Today, Move, Learn,
 - **Frontend**: React 19, TypeScript 5.9, Vite 7, Tailwind CSS v4
 - **State**: Zustand 5 (versioned browser storage or encrypted native storage), TanStack React Query v5
 - **Routing**: React Router v7 with lazy-loaded pages
-- **Backend**: Express 4 (serves SPA + Stripe API endpoints)
+- **Backend**: Express 4 (serves SPA + health check; legacy billing endpoints return 410)
 - **Mobile**: Capacitor 8 (iOS/Android)
 - **Testing**: Vitest 4 + Testing Library + jsdom
 - **Deployment**: GitHub Actions → Coolify (webhook)
@@ -43,7 +43,7 @@ src/
 ├── stores/           # Zustand stores (userStore, workoutSessionStore)
 ├── test/             # Test setup and specs
 └── types/            # TypeScript type definitions (exercise, user, workout, progress, timer)
-server/               # Express backend (Stripe webhooks, checkout, health check)
+server/               # Express static server + health check
 ```
 
 ## Path Alias
@@ -55,7 +55,7 @@ server/               # Express backend (Stripe webhooks, checkout, health check
 ### Error Handling
 - Global `ErrorBoundary` wraps the app in `App.tsx` — catches unhandled React errors
 - Individual pages handle "not found" states (exercise, workout) with fallback UI
-- Server gracefully handles missing Stripe configuration (warns on startup, returns 503)
+- Server has no web checkout or unauthenticated customer portal; native billing is disabled in the usability beta
 
 ### Components
 - Functional components with hooks only — no class components (ErrorBoundary is the sole exception)
@@ -99,16 +99,12 @@ server/               # Express backend (Stripe webhooks, checkout, health check
 ## Backend API
 
 Express server (`server/index.js`):
-- `POST /api/webhooks/stripe` — Stripe webhook handler
-- `POST /api/create-checkout-session` — Stripe subscription checkout
-- `POST /api/create-portal-session` — Stripe customer portal
+- Legacy Stripe POST routes return HTTP 410; no Stripe SDK or web billing runs
 - `GET /api/health` — Health check
 - Serves built SPA from `dist/` with fallback routing
 
 ## Environment Variables
 
-- `STRIPE_SECRET_KEY` — Stripe API key (backend)
-- `STRIPE_WEBHOOK_SECRET` — Stripe webhook signature validation
 - `COOLIFY_TOKEN` — Deployment webhook authorization
 - `APP_URL` — Production domain (default: https://prego.ashbi.ca)
 - `PORT` — Server port (default: 3000)

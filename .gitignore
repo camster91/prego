@@ -35,3 +35,10 @@ playwright-report/
 test-results/
 ios/build/
 android/local.properties
+*.p12
+*.p8
+*.mobileprovision
+*.jks
+*.keystore
+play-service-account*.json
+__pycache__/

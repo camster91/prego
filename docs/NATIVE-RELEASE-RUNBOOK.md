@@ -8,6 +8,8 @@ Run `npm ci`, `npm run lint`, `npm test`, `npm run native:sync`. Android: `cd an
 
 The native validation workflow builds unsigned Android bundles and an iOS simulator app. Neither is a signed store release. The build-and-push workflow now publishes images only through an explicit manual publish input, so a PR cannot replace the latest container image. Configure required repository checks and protected production environments before any release.
 
+For the requested usability beta and signed upload workflow, follow [INTERNAL-TESTING.md](INTERNAL-TESTING.md). Internal distribution does not enable draft exercise guidance or purchases.
+
 ## Signing and store configuration
 - Confirm final bundle ID/name, legal owner, licence, regions/languages and minimum OS policy.
 - Configure Apple Developer/App Store Connect signing and Google Play app/signing. Never commit private keys, certificates or service-account JSON.
