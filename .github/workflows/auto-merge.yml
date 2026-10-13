@@ -2,12 +2,24 @@ name: Auto Merge
 on:
   pull_request_target:
     types: [labeled, unlabeled, synchronize, opened, edited, reopened]
+
+concurrency:
+  group: auto-merge-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   auto-merge:
-    if: contains(github.event.pull_request.labels.*.name, 'auto-merge')
-    runs-on: ubuntu-latest
+    if: >-
+      contains(github.event.pull_request.labels.*.name, 'auto-merge') &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: read
     steps:
-      - uses: pascalgn/automerge-action@v0.16.3
+      - uses: pascalgn/automerge-action@d1203c0bf94a827b991e5de69d662e9163304fa0 # v0.16.3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MERGE_LABELS: "auto-merge"
