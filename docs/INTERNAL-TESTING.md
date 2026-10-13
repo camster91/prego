@@ -9,6 +9,24 @@ The requested distribution targets are **TestFlight internal testing** and **Goo
 - Native compilation and automated tests are available. Signed-store uploads have not yet been verified.
 - No signing credentials were found in this execution environment. The current GitHub integration returns HTTP 403 when listing repository secrets; the owner must configure or confirm them securely.
 
+## Reuse the existing publisher accounts
+
+A successful signed TestFlight upload was found in `camster91/jw-habits`, run [38138579701](https://github.com/camster91/jw-habits/actions/runs/38138579701), with Apple Team ID `NVJ5UY3T2X`. Prego now defaults to that team and accepts the same credential names. A different team can be supplied with `APPLE_TEAM_ID`; the signing script checks that the profile matches the chosen team and Prego bundle exactly.
+
+These existing account-level files may be reused: the Apple Distribution certificate/private key and password, App Store Connect API key/issuer/key ID, and the Google Play service account (after granting it access to Prego). The Android upload keystore can be reused only if it matches the key registered for this Play app. **The existing JW provisioning profile cannot sign Prego**: create/select an App Store profile for `com.prego.app`.
+
+GitHub environment secrets in `jw-habits` are scoped to that repository/environment. They do not automatically become available to Prego, and GitHub's API does not return their private values. Add the original local signing files to Prego securely; do not extract them through workflow logs or artifacts. No changes were made to the other app's release pipeline.
+
+Supported existing secret names (legacy Prego names below also work):
+
+| Existing name | Prego setting |
+| --- | --- |
+| `ASC_API_PRIVATE_KEY` | API `.p8` key |
+| `IOS_DISTRIBUTION_P12_BASE64` | Distribution certificate/private key |
+| `IOS_DISTRIBUTION_P12_PASSWORD` | Certificate password |
+| `IOS_APP_STORE_PROFILE_BASE64` | **Prego-specific** distribution profile |
+| `ANDROID_UPLOAD_KEYSTORE_BASE64` | Prego's registered upload keystore |
+
 ## Secure GitHub setup
 
 Open [repository Actions secrets and variables](https://github.com/camster91/prego/settings/secrets/actions). Never paste private keys, certificate passwords or service-account JSON into chat, issues, logs or tracked files.
@@ -17,8 +35,8 @@ Repository **variables**:
 
 | Name | Value |
 | --- | --- |
-| `APPLE_TEAM_ID` | Apple's 10-character Team ID |
-| `APPLE_APP_ID` | Numeric App Store Connect app ID for `com.prego.app` |
+| `APPLE_TEAM_ID` | Optional override of the existing team `NVJ5UY3T2X` |
+| `APPLE_APP_ID` | Optional numeric App Store Connect app ID for evidence; upload resolves the signed bundle ID |
 
 Repository **secrets**:
 

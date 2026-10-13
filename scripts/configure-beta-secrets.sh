@@ -43,17 +43,16 @@ set_file_secret() {
   unset PREGO_VALUE
 }
 if [ "$PREGO_PLATFORM" = 'both' ] || [ "$PREGO_PLATFORM" = 'ios' ]; then
-  set_variable APPLE_TEAM_ID 'Apple Team ID'
-  set_variable APPLE_APP_ID 'App Store Connect numeric app ID'
+  echo 'Using the existing Apple team NVJ5UY3T2X. Override APPLE_TEAM_ID in repository variables only if Prego uses another team.'
   set_text_secret ASC_KEY_ID 'App Store Connect API key ID'
   set_text_secret ASC_ISSUER_ID 'App Store Connect API issuer ID'
-  set_file_secret ASC_PRIVATE_KEY 'App Store Connect .p8 API key' plain
-  set_file_secret IOS_CERTIFICATE_BASE64 'Apple Distribution .p12 certificate and private key' base64
-  set_password IOS_CERTIFICATE_PASSWORD 'Distribution .p12 password'
-  set_file_secret IOS_PROFILE_BASE64 'App Store .mobileprovision profile for com.prego.app' base64
+  set_file_secret ASC_API_PRIVATE_KEY 'App Store Connect .p8 API key' plain
+  set_file_secret IOS_DISTRIBUTION_P12_BASE64 'Apple Distribution .p12 certificate and private key' base64
+  set_password IOS_DISTRIBUTION_P12_PASSWORD 'Distribution .p12 password'
+  set_file_secret IOS_APP_STORE_PROFILE_BASE64 'App Store .mobileprovision profile for com.prego.app' base64
 fi
 if [ "$PREGO_PLATFORM" = 'both' ] || [ "$PREGO_PLATFORM" = 'android' ]; then
-  set_file_secret ANDROID_KEYSTORE_BASE64 'Existing Google Play upload keystore' base64
+  set_file_secret ANDROID_UPLOAD_KEYSTORE_BASE64 'Existing Google Play upload keystore' base64
   set_password ANDROID_KEYSTORE_PASSWORD 'Upload keystore password'
   set_text_secret ANDROID_KEY_ALIAS 'Upload key alias'
   set_password ANDROID_KEY_PASSWORD 'Upload key password'

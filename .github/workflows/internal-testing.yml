@@ -25,14 +25,14 @@ jobs:
       PREGO_VERSION_NAME: ${{ inputs.version }}
       PREGO_BUILD_NUMBER: ${{ inputs.build_number }}
       VITE_PURCHASES_ENABLED: 'false'
-      APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+      APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID || 'NVJ5UY3T2X' }}
       APPLE_APP_ID: ${{ vars.APPLE_APP_ID }}
       ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
       ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
-      ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
-      IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
-      IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
-      IOS_PROFILE_BASE64: ${{ secrets.IOS_PROFILE_BASE64 }}
+      ASC_PRIVATE_KEY: ${{ secrets.ASC_API_PRIVATE_KEY || secrets.ASC_PRIVATE_KEY }}
+      IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_P12_BASE64 || secrets.IOS_CERTIFICATE_BASE64 }}
+      IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_P12_PASSWORD || secrets.IOS_CERTIFICATE_PASSWORD }}
+      IOS_PROFILE_BASE64: ${{ secrets.IOS_APP_STORE_PROFILE_BASE64 || secrets.IOS_PROFILE_BASE64 }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -86,7 +86,7 @@ jobs:
       PREGO_VERSION_NAME: ${{ inputs.version }}
       PREGO_BUILD_NUMBER: ${{ inputs.build_number }}
       VITE_PURCHASES_ENABLED: 'false'
-      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 || secrets.ANDROID_KEYSTORE_BASE64 }}
       PREGO_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
       PREGO_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
       PREGO_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}

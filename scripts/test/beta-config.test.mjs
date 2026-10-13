@@ -25,3 +25,9 @@ test('malformed service account cannot expose JSON or private-key fragments', ()
   assert.notEqual(result.status, 0);
   assert.doesNotMatch(result.stderr, /PRIVATE-FRAGMENT/);
 });
+
+test('numeric App Store ID is optional because upload resolves the signed bundle identifier', () => {
+  const { APPLE_APP_ID, ...withoutAppId } = ios;
+  assert.equal(APPLE_APP_ID, '123456');
+  assert.equal(run('ios', withoutAppId).status, 0);
+});
