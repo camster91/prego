@@ -57,4 +57,4 @@ src/ contains UI, routes, stores, data and hooks; src/test/ contains Vitest regr
 - [Remaining implementation backlog](docs/IMPLEMENTATION-BACKLOG.md)
 - [Custom media provenance](docs/ASSET-PROVENANCE.md)
 
-GitHub shipping epic #41 remains the parent tracker. Preserve existing data issue #18 and CI issue #42. Repository licensing remains an owner decision tracked by #31/PR #53; no licence is inferred here. Coordinate this README with open PR #61.
+GitHub shipping epic #41 remains the parent tracker. Preserve existing data issue #18 and CI issue #42. Licensed under MIT; see [LICENSE](LICENSE). The README update and licensing PRs are integrated with the mobile-readiness work.
