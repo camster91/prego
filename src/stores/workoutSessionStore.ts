@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { durableStorage } from '../lib/storage';
 import type { WorkoutSession, CompletedExercise } from '../types';
 
 interface WorkoutSessionState {
@@ -13,7 +14,7 @@ interface WorkoutSessionState {
 
   // Actions
   startWorkout: (workoutPlanId: string) => void;
-  completeExercise: (exerciseId: string, durationSeconds: number, skipped?: boolean) => void;
+  completeExercise: (exerciseId: string, durationSeconds: number, skipped?: boolean, sequenceIndex?: number) => void;
   nextExercise: () => void;
   previousExercise: () => void;
   pauseWorkout: () => void;
@@ -48,22 +49,25 @@ export const useWorkoutSessionStore = create<WorkoutSessionState>()(
         });
       },
 
-      completeExercise: (exerciseId, durationSeconds, skipped = false) => {
+      completeExercise: (exerciseId, durationSeconds, skipped = false, sequenceIndex) => {
+        if (!Number.isFinite(durationSeconds) || durationSeconds < 0) return;
         const session = get().currentSession;
         if (!session) return;
 
         const completedExercise: CompletedExercise = {
           exerciseId,
+          sequenceIndex,
           completedAt: new Date(),
           actualDurationSeconds: durationSeconds,
           skipped
         };
 
+        const previous = sequenceIndex === undefined ? undefined : session.exercisesCompleted.find(exercise => exercise.sequenceIndex === sequenceIndex);
         set({
           currentSession: {
             ...session,
-            exercisesCompleted: [...session.exercisesCompleted, completedExercise],
-            totalDurationSeconds: session.totalDurationSeconds + durationSeconds
+            exercisesCompleted: previous ? session.exercisesCompleted.map(exercise => exercise === previous ? completedExercise : exercise) : [...session.exercisesCompleted, completedExercise],
+            totalDurationSeconds: session.totalDurationSeconds + durationSeconds - (previous?.actualDurationSeconds ?? 0)
           }
         });
       },
@@ -131,6 +135,10 @@ export const useWorkoutSessionStore = create<WorkoutSessionState>()(
       }
     }),
     {
+      skipHydration: true,
+      storage: createJSONStorage(() => durableStorage),
+      version: 1,
+      migrate: (state) => state,
       name: 'prego-workout-session-storage',
       partialize: (state) => ({
         currentSession: state.currentSession,

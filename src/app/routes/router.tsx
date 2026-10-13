@@ -6,6 +6,7 @@ import {
   ExerciseDetailPage,
   ExercisesPage,
   HomePage,
+  LearnPage,
   NotFoundPage,
   OnboardingPage,
   PricingPage,
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { index: true, element: withSuspense(HomePage) },
+      { path: 'learn', element: withSuspense(LearnPage) },
       { path: 'exercises', element: withSuspense(ExercisesPage) },
       { path: 'exercises/:exerciseId', element: withSuspense(ExerciseDetailPage) },
       { path: 'workouts', element: withSuspense(WorkoutsPage) },

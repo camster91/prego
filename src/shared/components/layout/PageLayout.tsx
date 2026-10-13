@@ -20,10 +20,10 @@ function PageLayout({
   headerAction
 }: PageLayoutProps) {
   return (
-    <main
+    <main id="main-content" tabIndex={-1}
       className={cn(
         'min-h-[calc(100vh-4rem)]',
-        !noBottomPadding && 'pb-20', // Space for bottom nav
+        !noBottomPadding && 'pb-nav', // Space for bottom nav
         className
       )}
     >
@@ -49,7 +49,7 @@ function PageLayout({
       )}
       <div
         className={cn(
-          'max-w-7xl mx-auto',
+          'max-w-5xl mx-auto',
           !noPadding && 'px-4 sm:px-6 lg:px-8 py-6'
         )}
       >

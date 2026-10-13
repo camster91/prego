@@ -1,24 +1,27 @@
 {
-  "name": "Prego - Pregnancy Exercise",
+  "name": "Prego \u2014 Movement for every stage",
   "short_name": "Prego",
-  "description": "Safe, guided pregnancy exercises for every trimester",
+  "description": "Pregnancy movement education and your personal progress.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f8faf8",
-  "theme_color": "#0ea5e9",
+  "background_color": "#FAF8F4",
+  "theme_color": "#22332C",
   "icons": [
     {
-      "src": "/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/media/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon.svg",
+      "src": "/media/icon-512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
-  "categories": ["health", "fitness"]
+  "categories": [
+    "health",
+    "fitness"
+  ]
 }

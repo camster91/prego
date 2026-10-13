@@ -1,13 +1,13 @@
 import { NavLink } from 'react-router-dom';
-import { Home, Dumbbell, Calendar, BarChart3, User } from 'lucide-react';
+import { Home, Dumbbell, BookOpen, BarChart3, User } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 const navItems = [
-  { to: '/', icon: Home, label: 'Home' },
-  { to: '/exercises', icon: Dumbbell, label: 'Exercises' },
-  { to: '/workouts', icon: Calendar, label: 'Workouts' },
+  { to: '/', icon: Home, label: 'Today' },
+  { to: '/workouts', icon: Dumbbell, label: 'Move' },
+  { to: '/learn', icon: BookOpen, label: 'Learn' },
   { to: '/progress', icon: BarChart3, label: 'Progress' },
-  { to: '/settings', icon: User, label: 'Profile' }
+  { to: '/settings', icon: User, label: 'You' }
 ];
 
 function BottomNav() {
@@ -23,10 +23,10 @@ function BottomNav() {
               aria-label={label}
               className={({ isActive }) =>
                 cn(
-                  'flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2',
+                  'flex flex-col items-center gap-1 px-2 py-2 min-h-12 min-w-12 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2',
                   isActive
                     ? 'text-primary-600'
-                    : 'text-gray-400 hover:text-gray-600'
+                    : 'text-gray-600 hover:text-gray-900'
                 )
               }
             >

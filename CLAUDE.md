@@ -1,15 +1,15 @@
 # CLAUDE.md — Prego
 
-Prego is a mobile-first React web app for pregnancy-safe exercises. It provides guided workout plans, an exercise library, progress tracking, and achievement badges across all three trimesters.
+Prego is a React/Capacitor pregnancy movement companion with Today, Move, Learn, Progress and You. Exercise content is draft: never label it approved or enable guided workouts without qualified review and an approved screening/eligibility contract. See docs/PRODUCT-REQUIREMENTS.md and docs/RELEASE-READINESS.md.
 
 **Production URL**: https://prego.ashbi.ca
 
 ## Tech Stack
 
 - **Frontend**: React 19, TypeScript 5.9, Vite 7, Tailwind CSS v4
-- **State**: Zustand 5 (persisted to localStorage), TanStack React Query v5
+- **State**: Zustand 5 (versioned browser storage or encrypted native storage), TanStack React Query v5
 - **Routing**: React Router v7 with lazy-loaded pages
-- **Backend**: Express 4 (serves SPA + Stripe API endpoints)
+- **Backend**: Express 4 (serves SPA + health check; legacy billing endpoints return 410)
 - **Mobile**: Capacitor 8 (iOS/Android)
 - **Testing**: Vitest 4 + Testing Library + jsdom
 - **Deployment**: GitHub Actions → Coolify (webhook)
@@ -43,7 +43,7 @@ src/
 ├── stores/           # Zustand stores (userStore, workoutSessionStore)
 ├── test/             # Test setup and specs
 └── types/            # TypeScript type definitions (exercise, user, workout, progress, timer)
-server/               # Express backend (Stripe webhooks, checkout, health check)
+server/               # Express static server + health check
 ```
 
 ## Path Alias
@@ -55,7 +55,7 @@ server/               # Express backend (Stripe webhooks, checkout, health check
 ### Error Handling
 - Global `ErrorBoundary` wraps the app in `App.tsx` — catches unhandled React errors
 - Individual pages handle "not found" states (exercise, workout) with fallback UI
-- Server gracefully handles missing Stripe configuration (warns on startup, returns 503)
+- Server has no web checkout or unauthenticated customer portal; native billing is disabled in the usability beta
 
 ### Components
 - Functional components with hooks only — no class components (ErrorBoundary is the sole exception)
@@ -70,7 +70,7 @@ server/               # Express backend (Stripe webhooks, checkout, health check
 - Use `cn()` from `@/shared/utils/cn` to merge classnames
 
 ### State Management
-- Zustand stores with `persist` middleware (localStorage)
+- Zustand stores with `persist` middleware using src/lib/storage.ts; native keychain/encrypted storage, web localStorage; preserve migrations and complete deletion
 - localStorage keys: `prego-user-storage`, `prego-workout-session-storage`
 - Memoized selector functions for derived state (e.g. `selectCompletedWorkoutsCount`)
 
@@ -99,25 +99,21 @@ server/               # Express backend (Stripe webhooks, checkout, health check
 ## Backend API
 
 Express server (`server/index.js`):
-- `POST /api/webhooks/stripe` — Stripe webhook handler
-- `POST /api/create-checkout-session` — Stripe subscription checkout
-- `POST /api/create-portal-session` — Stripe customer portal
+- Legacy Stripe POST routes return HTTP 410; no Stripe SDK or web billing runs
 - `GET /api/health` — Health check
 - Serves built SPA from `dist/` with fallback routing
 
 ## Environment Variables
 
-- `STRIPE_SECRET_KEY` — Stripe API key (backend)
-- `STRIPE_WEBHOOK_SECRET` — Stripe webhook signature validation
 - `COOLIFY_TOKEN` — Deployment webhook authorization
 - `APP_URL` — Production domain (default: https://prego.ashbi.ca)
 - `PORT` — Server port (default: 3000)
 
 ## Domain-Specific Notes
 
-- **Pregnancy safety is critical**: exercises have trimester-appropriate filtering, contraindications, and modifications
-- Trimester calculation uses due date via `calculatePregnancyInfo()` in user store
+- **Pregnancy safety is critical**: legacy draft trimester tags are not clinical approval; src/lib/contentReview.ts fails closed until review and screening rules are supplied
+- Stage derives from calendar dates via calculatePregnancyInfo()/usePregnancyStage(); never use stale profile week fields for selection. Explicit unknown/out-of-range/date-passed states never grant eligibility.
 - Audio cues use Web Audio API directly (not the use-sound library) in ActiveWorkoutPage
 - PWA-capable: manifest.json, service worker (`public/sw.js`), registered in `main.tsx`
-- Service worker uses network-first for navigation, cache-first for static assets
+- Production service worker is generated from the complete immutable asset bundle by scripts/generate-service-worker.mjs; native builds do not register it
 - Icon-only buttons must include `aria-label` for accessibility

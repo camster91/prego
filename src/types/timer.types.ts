@@ -18,9 +18,10 @@ export interface TimerState {
 }
 
 export interface TimerConfig {
+  persistenceKey?: string;
   countdownSeconds: number; // Initial countdown before workout
   exercises: TimerExercise[];
-  onExerciseComplete?: (exerciseIndex: number) => void;
+  onExerciseComplete?: (exerciseIndex: number, skipped?: boolean, actualSeconds?: number) => void;
   onWorkoutComplete?: () => void;
   onPhaseChange?: (phase: TimerPhase) => void;
 }

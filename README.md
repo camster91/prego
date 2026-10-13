@@ -1,221 +1,60 @@
 # Prego
 
-**Pregnancy Exercise App**
+Pregnancy movement education and personal workout records, built with React, TypeScript and Capacitor for web, iOS and Android.
 
-A modern, mobile-friendly application delivering pregnancy-safe exercises, guided workout plans, real-time timers, and progress tracking. Built with Capacitor for native iOS and Android deployment.
+**Current status: engineering candidate, not approved for public/store release.** Guided workouts are blocked until qualified content and screening review. Native store purchases are disabled by default. No checkbox establishes medical clearance, and a checkout URL cannot grant an entitlement.
 
-## Features
+## Experience
 
-### Personalized Experience
-- **Automatic Trimester Tracking:** Calculates current trimester based on due date
-- **Safe Exercise Library:** 12+ pregnancy-safe exercises vetted for each trimester
-- **Smart Filtering:** Filter by trimester, category, and intensity level
+Today, Move, Learn, Progress and You provide session previews, original Higgsfield artwork and optional decorative motion, trusted-resource links, personal records and data controls. Media is bundled locally; motion has pause and reduced-motion handling. There are 12 draft exercise records and 8 draft workout plans; a professionally reviewed production library remains outstanding.
 
-### Workout Programs
-- **Guided Workout Plans:** 8 pre-built programs (5-15 minutes each)
-- **Trimester-Tailored:** Programs specifically designed for each pregnancy stage
-- **Custom Workouts:** Build your own workout from the exercise library
+Native records use iOS keychain/Android encrypted storage. Web records use versioned browser storage with a local recovery copy. Exported JSON backups contain private information. Local mirrors cannot protect against clearing all browser data or losing a device. Full local deletion includes profile, history, active timer and recovery copies; store/provider purchase records are separate.
 
-### Active Workout
-- **Real-time Timer:** Countdown timers with audio cues
-- **Exercise Queue:** Intuitive queue system for workout flow
-- **Rest Intervals:** Configurable rest periods between exercises
+## Development
 
-### Progress Tracking
-- **Activity History:** Weekly activity charts and statistics
-- **Streak Tracking:** Maintain workout consistency
-- **Achievement Badges:** Unlock achievements for milestones
+Node 22+:
 
-### Mobile-First
-- **Offline Capable:** State persisted locally for on-the-go workouts
-- **Native Apps:** iOS and Android via Capacitor
-- **PWA Support:** Install on any device
-
-## Tech Stack
-
-| Category | Technology |
-|----------|------------|
-| Frontend | React 19 + TypeScript |
-| Styling | Tailwind CSS v4 + Lucide Icons |
-| State | Zustand (persisted) |
-| Routing | React Router v7 |
-| Mobile | Capacitor 8 (iOS + Android) |
-| Build | Vite |
-| Charts | Recharts |
-| Audio | Web Audio API |
-
-## Prerequisites
-
-- Node.js 18+
-- npm 9+
-- For native builds: Android Studio and/or Xcode
-
-## Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/camster91/prego.git
-cd prego
-
-# Install dependencies
-npm install
-
-# Start development server
+```sh
+npm ci
 npm run dev
-```
-
-## Usage
-
-### Development
-
-```bash
-# Start Vite dev server
-npm run dev
-
-# Preview production build
-npm run preview
-```
-
-### Native Mobile
-
-```bash
-# Build web assets
+npm run lint
+npm test
 npm run build
-
-# Sync to native projects
-npx cap sync
-
-# Open in Android Studio
-npx cap open android
-
-# Open in Xcode
-npx cap open ios
+npm run test:e2e
 ```
 
-### Testing
+For the browser suite, first run `npx playwright install chromium`. Production builds generate a versioned offline service worker for all bundled assets. Native apps use bundled web assets without a browser service worker.
 
-```bash
-# Run tests
-npm run test
+## Native builds
 
-# Run tests in watch mode
-npm run test:watch
+```sh
+npm run native:sync
+npm run native:android
+npm run native:ios
 ```
 
-## Project Structure
+Android requires JDK 21 and SDK 36. Run `./gradlew assembleDebug bundleRelease lintDebug` from android/. iOS requires macOS/current Xcode. Minimum app OS: iOS 16.4; Android API 24 with current WebView. Unsigned bundles and simulator builds are validation artifacts, not store submissions.
 
-```
-src/
-├── components/            # React components
-│   ├── exercises/        # Exercise card and detail components
-│   ├── workout/          # Timer, queue, and workout player
-│   ├── progress/         # Charts and achievement components
-│   └── ui/               # Base UI components
-├── pages/                 # Route pages
-├── hooks/                 # Custom React hooks
-├── store/                 # Zustand state management
-├── data/                  # Exercise and workout data
-├── utils/                 # Utility functions
-└── types/                 # TypeScript definitions
+## Billing
 
-public/
-└── sounds/                # Audio files for timer cues
+The native RevenueCat adapter uses the current offering's lifetime package and named `pregnancy_pass` entitlement. Configure store products and public native SDK keys, then complete real sandbox purchase/restore tests. Leave VITE_PURCHASES_ENABLED=false until release gates pass. Never place secret provider keys in VITE_* variables. The Express server serves the app and a health check; legacy Stripe routes return HTTP 410 and cannot initiate payments or customer portal sessions.
 
-server/
-└── index.js              # Express server (optional backend)
-```
+## Internal testing
 
-## Configuration
+The requested beta targets are TestFlight internal testing and Google Play's internal track. The manual Native validation workflow can sign/upload to both after configuration and passing checks; PRs never distribute. See [secure setup and tester instructions](docs/INTERNAL-TESTING.md). Guided workouts and purchases remain disabled for this usability beta. No upload is claimed until signed artifacts, store processing and tester installation are verified.
 
-### Capacitor
+Restore/deletion now use a verified transaction journal before updating in-memory records. Failed replacements roll back; interrupted operations recover before app hydration. Native journals use the same encrypted storage as records. Keep an exported backup for device loss or full browser-storage deletion.
 
-Edit `capacitor.config.ts` for native app configuration:
+## Project map
 
-```typescript
-import type { CapacitorConfig } from '@capacitor/cli';
+src/ contains UI, routes, stores, data and hooks; src/test/ contains Vitest regression tests; e2e/ contains Playwright/axe checks. ios/ and android/ are native projects. assets/ preserves original generated artwork; public/media/ contains optimised runtime media. docs/ holds requirements, evidence and remaining release work.
 
-const config: CapacitorConfig = {
-  appId: 'com.yourcompany.prego',
-  appName: 'Prego',
-  webDir: 'dist',
-  server: {
-    androidScheme: 'https'
-  }
-};
+- [Product requirements](docs/PRODUCT-REQUIREMENTS.md)
+- [Capability map](CAPABILITY-MAP.md)
+- [Release evidence and blockers](docs/RELEASE-READINESS.md)
+- [Native release runbook](docs/NATIVE-RELEASE-RUNBOOK.md)
+- [Clinical/content review brief](docs/CONTENT-REVIEW-BRIEF.md)
+- [Remaining implementation backlog](docs/IMPLEMENTATION-BACKLOG.md)
+- [Custom media provenance](docs/ASSET-PROVENANCE.md)
 
-export default config;
-```
-
-### Environment Variables
-
-Create a `.env` file if needed for backend features:
-
-```env
-VITE_API_URL=https://api.example.com
-```
-
-## Store Submission Checklist
-
-Before submitting to app stores:
-
-- [ ] Generate release keystore for Android signing
-- [ ] Generate production App Icons and Splash Screens
-- [ ] Create Apple Developer provisioning profiles
-- [ ] Finalize store listing metadata
-  - [ ] App screenshots (phone, tablet)
-  - [ ] Privacy Policy URL
-  - [ ] App description and keywords
-- [ ] Configure app.json / app.config.js
-
-## Available Scripts
-
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
-| `npm run test` | Run Vitest |
-| `npm run preview` | Preview production build |
-
-## Data Structure
-
-### Exercise
-```typescript
-interface Exercise {
-  id: string;
-  name: string;
-  description: string;
-  trimester: 1 | 2 | 3 | 'all';
-  category: 'strength' | 'stretch' | 'cardio' | 'breathing';
-  intensity: 'low' | 'medium' | 'high';
-  duration: number; // seconds
-  instructions: string[];
-}
-```
-
-### Workout
-```typescript
-interface Workout {
-  id: string;
-  name: string;
-  description: string;
-  trimester: 1 | 2 | 3 | 'all';
-  exercises: Exercise[];
-  totalDuration: number;
-}
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push and open a Pull Request
-
-## License
-
-Proprietary - All rights reserved.
-
----
-Developed by Cameron Ashley / Nexus AI.
+GitHub shipping epic #41 remains the parent tracker. Preserve existing data issue #18 and CI issue #42. Licensed under MIT; see [LICENSE](LICENSE). The README update and licensing PRs are integrated with the mobile-readiness work.

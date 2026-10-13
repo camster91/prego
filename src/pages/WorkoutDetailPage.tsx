@@ -1,178 +1,85 @@
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Dumbbell, Play, ChevronRight } from 'lucide-react';
-import { PageLayout } from '../shared/components/layout/PageLayout';
-import { Card, CardContent } from '../shared/components/ui/Card';
-import { Button } from '../shared/components/ui/Button';
-import { TrimesterBadge, IntensityBadge, Badge } from '../shared/components/ui/Badge';
-import { ExercisePlaceholder } from '../shared/components/ui/ExercisePlaceholder';
-import { getWorkoutById } from '../data/workouts';
-import { getExerciseById } from '../data/exercises';
-import { cn } from '../shared/utils/cn';
-
-function WorkoutDetailPage() {
-  const { workoutId } = useParams<{ workoutId: string }>();
-  const navigate = useNavigate();
-
-  const workout = workoutId ? getWorkoutById(workoutId) : null;
-
-  if (!workout) {
+import { Link, useParams } from "react-router-dom";
+import { Clock, ArrowLeft } from "lucide-react";
+import { getWorkoutById } from "../data/workouts";
+import { getExerciseById } from "../data/exercises";
+import { workoutAvailability } from "../lib/contentReview";
+import { useUserStore } from "../stores";
+import { PageLayout } from "../shared/components/layout/PageLayout";
+export function WorkoutDetailPage() {
+  const { workoutId } = useParams();
+  const workout = getWorkoutById(workoutId ?? "");
+  const profile = useUserStore((state) => state.profile);
+  if (!workout)
     return (
-      <PageLayout>
-        <div className="text-center py-12">
-          <p className="text-gray-500">Workout not found.</p>
-          <Button variant="ghost" onClick={() => navigate('/workouts')} className="mt-4">
-            Back to Workouts
-          </Button>
-        </div>
+      <PageLayout title="Session not found">
+        <Link
+          to="/workouts"
+          className="inline-flex min-h-12 items-center text-primary-800 underline"
+        >
+          Back to Move
+        </Link>
       </PageLayout>
     );
-  }
-
-  // Calculate total rest time
-  const totalRestSeconds = workout.exercises.reduce((acc, ex) => acc + ex.restSeconds, 0);
+  const availability = workoutAvailability(workout, profile);
   return (
-    <PageLayout noPadding noBottomPadding={false}>
-      {/* Back button */}
-      <div className="px-4 pt-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate(-1)}
-          className="gap-2 -ml-2"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back
-        </Button>
-      </div>
-
-      {/* Hero */}
-      <div
-        className={cn(
-          'mx-4 mt-4 rounded-2xl p-6 text-white',
-          workout.trimester === 1
-            ? 'bg-gradient-to-br from-emerald-500 to-emerald-600'
-            : workout.trimester === 2
-            ? 'bg-gradient-to-br from-amber-500 to-amber-600'
-            : 'bg-gradient-to-br from-violet-500 to-violet-600'
-        )}
+    <PageLayout>
+      <Link
+        to="/workouts"
+        className="mb-5 inline-flex min-h-12 items-center gap-2 text-primary-800"
       >
-        <TrimesterBadge trimester={workout.trimester} className="bg-white/20 text-white" />
-        <h1 className="text-2xl font-bold mt-3">{workout.name}</h1>
-        <p className="text-white/80 mt-2">{workout.description}</p>
-
-        <div className="flex items-center gap-6 mt-4 text-white/90">
-          <span className="flex items-center gap-2">
-            <Clock className="w-5 h-5" />
-            {workout.totalDurationMinutes} min
-          </span>
-          <span className="flex items-center gap-2">
-            <Dumbbell className="w-5 h-5" />
-            {workout.exercises.length} exercises
-          </span>
-        </div>
-
-        <Link to={`/workout/${workout.id}/active`} className="block mt-6">
-          <Button
-            size="lg"
-            fullWidth
-            className="bg-white text-gray-900 hover:bg-gray-100 gap-2"
+        <ArrowLeft aria-hidden="true" className="h-5 w-5" />
+        Back to Move
+      </Link>
+      <img
+        src="/media/studio-poster.webp"
+        alt="A softly lit studio with a yoga mat and chair"
+        className="mb-6 aspect-video w-full rounded-2xl object-cover"
+      />
+      <span className="text-xs tracking-widest text-accent-700">
+        SESSION IN PREPARATION
+      </span>
+      <h1 className="mt-3 text-3xl font-semibold text-primary-900">
+        {workout.name}
+      </h1>
+      <p className="my-4 flex items-center gap-2 text-gray-600">
+        <Clock aria-hidden="true" className="h-5 w-5" />
+        {workout.totalDurationMinutes} min · {workout.exercises.length}{" "}
+        movements
+      </p>
+      <p className="mb-6 rounded-xl bg-sage-100 p-5 text-gray-700">
+        {availability.reason} This preview is not an exercise prescription.
+      </p>
+      <h2 className="mb-4 text-xl font-semibold text-primary-900">
+        Proposed movement sequence
+      </h2>
+      <ol className="mb-6 divide-y divide-sage-200 rounded-xl border border-sage-200 bg-white px-4">
+        {workout.exercises.map((exercise, index) => (
+          <li
+            key={`${index}-${exercise.exerciseId}`}
+            className="flex min-h-16 items-center gap-4 py-3"
           >
-            <Play className="w-5 h-5" />
-            Start Workout
-          </Button>
-        </Link>
-      </div>
-
-      <div className="px-4 py-6 space-y-6">
-        {/* Workout Info */}
-        <div className="grid grid-cols-3 gap-4">
-          <Card>
-            <CardContent className="text-center py-4">
-              <p className="text-2xl font-bold text-gray-900">{workout.exercises.length}</p>
-              <p className="text-xs text-gray-500">Exercises</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="text-center py-4">
-              <p className="text-2xl font-bold text-gray-900">
-                {Math.round(totalRestSeconds / 60)}
-              </p>
-              <p className="text-xs text-gray-500">Rest (min)</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="text-center py-4">
-              <p className="text-2xl font-bold text-gray-900">
-                {workout.recommendedFrequency}x
-              </p>
-              <p className="text-xs text-gray-500">Per Week</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Details */}
-        <Card>
-          <CardContent>
-            <div className="flex items-center justify-between py-2">
-              <span className="text-gray-500">Intensity</span>
-              <IntensityBadge intensity={workout.intensity} />
-            </div>
-            <div className="flex items-center justify-between py-2 border-t border-gray-100">
-              <span className="text-gray-500">Category</span>
-              <Badge variant="default" className="capitalize">
-                {workout.category.replace('-', ' ')}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between py-2 border-t border-gray-100">
-              <span className="text-gray-500">Weeks</span>
-              <span className="font-medium text-gray-900">
-                {workout.weekRange.start}-{workout.weekRange.end}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Exercise List */}
-        <div>
-          <h2 className="font-semibold text-gray-900 mb-4">Exercises</h2>
-          <div className="space-y-3">
-            {workout.exercises.map((workoutExercise, index) => {
-              const exercise = getExerciseById(workoutExercise.exerciseId);
-              if (!exercise) return null;
-
-              return (
-                <Link
-                  key={`${workoutExercise.exerciseId}-${index}`}
-                  to={`/exercises/${exercise.id}`}
-                >
-                  <Card className="hover:shadow-md transition-shadow">
-                    <CardContent className="flex items-center gap-4">
-                      <ExercisePlaceholder category={exercise.category} size="sm" />
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-gray-900 truncate">
-                          {exercise.name}
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          {workoutExercise.durationSeconds
-                            ? `${Math.round(workoutExercise.durationSeconds / 60)} min`
-                            : workoutExercise.reps
-                            ? `${workoutExercise.reps} reps`
-                            : ''}
-                          {workoutExercise.restSeconds > 0 &&
-                            ` • ${workoutExercise.restSeconds}s rest`}
-                        </p>
-                      </div>
-                      <ChevronRight className="w-5 h-5 text-gray-400" />
-                    </CardContent>
-                  </Card>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+            <span className="text-sm text-gray-600">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <span className="text-gray-800">
+              {getExerciseById(exercise.exerciseId)?.name ??
+                "Movement under review"}
+            </span>
+          </li>
+        ))}
+      </ol>
+      <button
+        disabled
+        className="min-h-14 w-full rounded-xl bg-sage-100 px-5 font-medium text-gray-600"
+      >
+        Available after professional review
+      </button>
+      <Link
+        to="/learn#safety"
+        className="mt-4 inline-flex min-h-12 items-center text-primary-800 underline"
+      >
+        Read safety & care
+      </Link>
     </PageLayout>
   );
 }
-
-export { WorkoutDetailPage };

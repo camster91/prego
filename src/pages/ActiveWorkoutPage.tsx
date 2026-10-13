@@ -1,3 +1,5 @@
+import { workoutAvailability } from '../lib/contentReview';
+import { usePregnancyStage } from '../hooks/usePregnancyStage';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import {
@@ -30,7 +32,9 @@ function ActiveWorkoutPage() {
 
   const workout = workoutId ? getWorkoutById(workoutId) : null;
   const preferences = useUserStore((state) => state.profile?.preferences);
-  const userTrimester = useUserStore((state) => state.profile?.currentTrimester);
+  const profile = useUserStore(state => state.profile);
+  const userTrimester = usePregnancyStage().currentTrimester;
+  const availability = workout ? workoutAvailability(workout, profile) : { available: false, reason: 'Workout not found.' };
 
   const [soundEnabled, setSoundEnabled] = useState(preferences?.soundEnabled ?? true);
   const [showExitModal, setShowExitModal] = useState(false);
@@ -84,6 +88,7 @@ function ActiveWorkoutPage() {
     }
 
     return {
+      persistenceKey: currentSession?.workoutPlanId === workout.id ? currentSession.id : undefined,
       countdownSeconds: 5,
       exercises: workout.exercises.map((we) => {
         const exercise = getExerciseById(we.exerciseId);
@@ -94,9 +99,9 @@ function ActiveWorkoutPage() {
           restSeconds: we.restSeconds
         };
       }),
-      onExerciseComplete: (index) => {
+      onExerciseComplete: (index, skipped, actualSeconds) => {
         const ex = workout.exercises[index];
-        completeExercise(ex.exerciseId, ex.durationSeconds || 30);
+        completeExercise(ex.exerciseId, actualSeconds ?? ex.durationSeconds ?? 30, skipped, index);
         playSound('complete');
       },
       onWorkoutComplete: () => {
@@ -109,13 +114,13 @@ function ActiveWorkoutPage() {
         }
       }
     };
-  }, [workout, completeExercise, playSound]);
+  }, [workout, currentSession?.id, currentSession?.workoutPlanId, completeExercise, playSound]);
 
   const { state, start, pause, resume, skip, goToExercise } = useTimer(timerConfig);
 
   // Start workout session when component mounts — skip if resuming an existing session
   useEffect(() => {
-    if (workout && currentSession?.workoutPlanId !== workout.id) {
+    if (availability.available && workout && currentSession?.workoutPlanId !== workout.id) {
       startWorkout(workout.id);
     }
     // Only run on mount — don't restart when currentSession reference changes
@@ -152,6 +157,8 @@ function ActiveWorkoutPage() {
     );
   }
 
+  if (!availability.available) return <main className="min-h-screen bg-sage-50 px-6 py-16"><div className="mx-auto max-w-lg"><h1 className="text-2xl font-semibold text-primary-900">This session is not available yet</h1><p className="my-6 text-gray-700">{availability.reason}</p><Button onClick={() => navigate('/learn#safety')}>Safety & care</Button><Button variant="ghost" onClick={() => navigate('/workouts')}>Back to Move</Button></div></main>;
+
   const currentExercise =
     state.phase === 'complete'
       ? null
@@ -176,6 +183,7 @@ function ActiveWorkoutPage() {
           variant="ghost"
           size="icon"
           onClick={handleExit}
+          aria-label="End workout"
           className="text-white hover:bg-white/10"
         >
           <X className="w-6 h-6" />
@@ -313,6 +321,7 @@ function ActiveWorkoutPage() {
                 <Button
                   variant="ghost"
                   size="icon"
+                  aria-label="Previous exercise"
                   onClick={() => goToExercise(state.currentExerciseIndex - 1)}
                   disabled={state.currentExerciseIndex === 0 || state.phase === 'countdown'}
                   className="text-white hover:bg-white/10 disabled:opacity-30 w-12 h-12"
@@ -324,6 +333,7 @@ function ActiveWorkoutPage() {
                   <Button
                     size="icon-lg"
                     onClick={start}
+                    aria-label="Start workout"
                     className="w-16 h-16 rounded-full bg-primary-600 hover:bg-primary-700"
                   >
                     <Play className="w-8 h-8" fill="white" />
@@ -332,6 +342,7 @@ function ActiveWorkoutPage() {
                   <Button
                     size="icon-lg"
                     onClick={resume}
+                    aria-label="Resume workout"
                     className="w-16 h-16 rounded-full bg-primary-600 hover:bg-primary-700"
                   >
                     <Play className="w-8 h-8" fill="white" />
@@ -340,6 +351,7 @@ function ActiveWorkoutPage() {
                   <Button
                     size="icon-lg"
                     onClick={pause}
+                    aria-label="Pause workout"
                     className="w-16 h-16 rounded-full bg-white/10 hover:bg-white/20"
                   >
                     <Pause className="w-8 h-8" />

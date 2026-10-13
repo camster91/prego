@@ -21,11 +21,11 @@ const buttonVariants = cva(
           'bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:ring-emerald-500'
       },
       size: {
-        sm: 'h-9 px-3 text-sm',
-        md: 'h-11 px-5 text-sm',
-        lg: 'h-14 px-8 text-base',
-        icon: 'h-11 w-11',
-        'icon-sm': 'h-9 w-9',
+        sm: 'min-h-12 px-3 text-sm',
+        md: 'min-h-12 px-5 text-sm',
+        lg: 'min-h-14 px-8 text-base',
+        icon: 'h-12 w-12',
+        'icon-sm': 'h-12 w-12',
         'icon-lg': 'h-14 w-14'
       },
       fullWidth: {

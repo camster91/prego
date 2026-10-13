@@ -35,6 +35,7 @@ export interface WorkoutPlan {
 }
 
 export interface CompletedExercise {
+  sequenceIndex?: number;
   exerciseId: string;
   completedAt: Date;
   actualDurationSeconds: number;

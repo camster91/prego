@@ -16,3 +16,5 @@ export const OnboardingPage = lazy(() => import('../../pages/OnboardingPage').th
 export const PricingPage = lazy(() => import('../../pages/PricingPage').then(m => ({ default: m.PricingPage })));
 export const SuccessPage = lazy(() => import('../../pages/SuccessPage').then(m => ({ default: m.SuccessPage })));
 export const NotFoundPage = lazy(() => import('../../pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
+
+export const LearnPage = lazy(() => import('../../pages/LearnPage').then(m => ({ default: m.LearnPage })));

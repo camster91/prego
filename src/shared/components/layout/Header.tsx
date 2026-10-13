@@ -1,45 +1,11 @@
 import { Link } from 'react-router-dom';
-import { Heart, Settings } from 'lucide-react';
-import { useUserStore } from '../../../stores';
-import { Button } from '../ui/Button';
-import { TrimesterBadge } from '../ui/Badge';
-
+import { ShieldCheck } from 'lucide-react';
 function Header() {
-  const profile = useUserStore((state) => state.profile);
-
-  return (
-    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center">
-              <Heart className="w-6 h-6 text-white" fill="white" />
-            </div>
-            <span className="text-xl font-bold text-gray-900">Prego</span>
-          </Link>
-
-          {/* Right side */}
-          <div className="flex items-center gap-4">
-            {profile && (
-              <div className="hidden sm:flex items-center gap-3">
-                <TrimesterBadge trimester={profile.currentTrimester} />
-                <span className="text-sm text-gray-500">
-                  Week {profile.currentWeek}
-                </span>
-              </div>
-            )}
-
-            <Link to="/settings">
-              <Button variant="ghost" size="icon" aria-label="Settings">
-                <Settings className="w-5 h-5" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-    </header>
-  );
+  return <header className="sticky top-0 z-40 border-b border-sage-200 bg-sage-50/95 backdrop-blur-lg pt-safe">
+    <div className="mx-auto flex min-h-16 max-w-5xl items-center justify-between gap-4 px-5">
+      <Link to="/" aria-label="Prego today" className="flex min-h-12 items-center gap-2 text-primary-900"><img src="/media/icon-192.png" width="36" height="36" alt="" className="rounded-xl" /><span className="text-2xl font-semibold tracking-tight">prego<span className="text-accent-600">.</span></span></Link>
+      <Link to="/learn#safety" className="flex min-h-12 items-center gap-2 text-sm text-primary-800"><ShieldCheck aria-hidden="true" className="h-5 w-5" />Safety & care</Link>
+    </div>
+  </header>;
 }
-
 export { Header };
