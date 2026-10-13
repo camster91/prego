@@ -66,7 +66,7 @@ Google: create/register the matching app; configure Play App Signing and its upl
 
 ## Dispatch the exact beta
 
-Use the existing [Native validation workflow](https://github.com/camster91/prego/actions/workflows/native-validation.yml) on branch `feat/mobile-readiness`:
+Use the existing [Native validation workflow](https://github.com/camster91/prego/actions/workflows/native-validation.yml) on branch `master`:
 
 - `publish_internal`: `true`
 - `platform`: `both`
@@ -76,7 +76,7 @@ Use the existing [Native validation workflow](https://github.com/camster91/prego
 CLI equivalent, once the settings and identifiers above are confirmed:
 
 ```bash
-gh workflow run native-validation.yml --ref feat/mobile-readiness \
+gh workflow run native-validation.yml --ref master \
   -f publish_internal=true -f platform=both -f version=1.0.0 -f build_number=2
 ```
 
