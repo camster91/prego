@@ -5,7 +5,7 @@
   "testflight": {
     "status": "blocked: signing/account settings missing in GitHub Actions",
     "appId": null,
-    "teamId": null,
+    "teamId": "NVJ5UY3T2X",
     "version": null,
     "build": null,
     "commit": null,
@@ -14,7 +14,7 @@
     "processingVerifiedAt": null,
     "internalGroup": null,
     "firstInstallVerifiedAt": null,
-    "configurationCheckRunUrl": "https://github.com/camster91/prego/actions/runs/38278671034"
+    "configurationCheckRunUrl": "https://github.com/camster91/prego/actions/runs/38399914673"
   },
   "googlePlay": {
     "status": "blocked: signing/account settings missing in GitHub Actions",
@@ -27,7 +27,7 @@
     "processingVerifiedAt": null,
     "optInUrl": null,
     "firstInstallVerifiedAt": null,
-    "configurationCheckRunUrl": "https://github.com/camster91/prego/actions/runs/38278671034"
+    "configurationCheckRunUrl": "https://github.com/camster91/prego/actions/runs/38399914673"
   },
   "deviceResults": []
 }
